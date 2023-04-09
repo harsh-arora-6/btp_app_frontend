@@ -1,6 +1,6 @@
-import 'package:btp_app_mac/Models/LineModel.dart';
-import 'package:btp_app_mac/Utilities/api_calls.dart';
 import 'package:flutter/material.dart';
+
+import '../Models/line_model.dart';
 
 class CableForm extends StatefulWidget {
   // const CableForm({Key? key}) : super(key: key);

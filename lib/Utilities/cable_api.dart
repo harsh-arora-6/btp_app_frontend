@@ -3,7 +3,7 @@ import 'package:btp_app_mac/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:btp_app_mac/Models/LineModel.dart';
+import 'package:btp_app_mac/Models/line_model.dart';
 
 Future<List<CableModel>> getAllCables() async {
   http.Response response = await http.get(Uri.parse('$baseUrl/cables/'));

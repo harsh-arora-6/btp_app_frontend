@@ -1,13 +1,7 @@
-import 'package:btp_app_mac/Models/LTModel.dart';
-import 'package:btp_app_mac/Models/RMUModel.dart';
-import 'package:btp_app_mac/Models/TransformerModel.dart';
-import 'package:btp_app_mac/Utilities/icon_from_image.dart';
-import 'package:btp_app_mac/widgets/LTpanel_form.dart';
 import 'package:btp_app_mac/widgets/image_gesture.dart';
-import 'package:btp_app_mac/widgets/rmu_form.dart';
-import 'package:btp_app_mac/widgets/transformer_form.dart';
+import 'package:btp_app_mac/widgets/substation_child_form.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:btp_app_mac/Models/substation_child_model.dart';
 
 class SubstationWidget extends StatefulWidget {
   const SubstationWidget({Key? key}) : super(key: key);
@@ -30,8 +24,17 @@ class _SubstationWidgetState extends State<SubstationWidget> {
             children: [
               // Rmu gesture image
               Center(
-                  child: ImageGesture('assets/images/RMU.png', 20,
-                      'RMU Information', RMUForm(RMUModel(0, 0)))),
+                child: ImageGesture(
+                  'assets/images/RMU.png',
+                  20,
+                  'RMU Information',
+                  SubstationChildForm(
+                    'Rmu',
+                    SubstationChildModel(
+                        "rmu_id", <String, dynamic>{}, "parent substation id"),
+                  ),
+                ),
+              ),
               // list of transformers gesture image
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -46,11 +49,17 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                           itemCount: transformers.length,
                           itemBuilder: (context, i) {
                             return ImageGesture(
-                                'assets/images/transformer.png',
-                                10,
-                                'T1 Information',
-                                TransformerForm(transformerModel("", "", 0, 0,
-                                    "2023", 0, 0, 2021, "substation 1")));
+                              'assets/images/transformer.png',
+                              10,
+                              'T1 Information',
+                              SubstationChildForm(
+                                'Transformer',
+                                SubstationChildModel(
+                                    "Transformer_id",
+                                    <String, dynamic>{},
+                                    "parent substation id"),
+                              ),
+                            );
                           }),
                     ),
                   ),
@@ -74,8 +83,16 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                 ],
               ),
               // LT panel gesture image
-              ImageGesture('assets/images/LT_Panel.png', 70,
-                  'LT Panel Information', LTPanelForm(LTModel(0, 0, 0, 0))),
+              ImageGesture(
+                'assets/images/LT_Panel.png',
+                70,
+                'LT Panel Information',
+                SubstationChildForm(
+                  'LT Panel',
+                  SubstationChildModel("LTpanel_id", <String, dynamic>{},
+                      "parent substation id"),
+                ),
+              ),
             ],
           ),
         ));

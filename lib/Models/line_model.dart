@@ -17,15 +17,15 @@ class CableModel {
         json['point_locations'].map((p) => LocationPoint.fromJson(p)).toList());
     return CableModel(json['_id'] as String, json['properties'], listPoints);
   }
-  // Map toJson() => {
-  //       "name": name,
-  //       "rating": rating,
-  //       "point_locations": points.map((e) => e.toJson()).toList(),
-  //       "starting_location": startingLocation,
-  //       "ending_location": endingLocation,
-  //       "next_maintenance": nextMant,
-  //       "year_of_manufacture": yearOfManufacture
-  //     };
+// Map toJson() => {
+//       "name": name,
+//       "rating": rating,
+//       "point_locations": points.map((e) => e.toJson()).toList(),
+//       "starting_location": startingLocation,
+//       "ending_location": endingLocation,
+//       "next_maintenance": nextMant,
+//       "year_of_manufacture": yearOfManufacture
+//     };
 }
 
 class LocationPoint {

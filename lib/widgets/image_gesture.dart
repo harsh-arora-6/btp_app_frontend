@@ -1,14 +1,15 @@
 import 'package:btp_app_mac/Models/TransformerModel.dart';
-import 'package:btp_app_mac/widgets/transformer_form.dart';
+import 'package:btp_app_mac/widgets/substation_child_form.dart';
 import 'package:flutter/material.dart';
 
 class ImageGesture extends StatelessWidget {
-  String asset;
-  double height;
-  String id;
-  var formWidget;
+  final String asset;
+  final double height;
+  final String id;
+  final Widget formWidget;
 
-  ImageGesture(this.asset, this.height, this.id, this.formWidget);
+  const ImageGesture(this.asset, this.height, this.id, this.formWidget,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class ImageGesture extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Image.asset(
           asset,
-          height: this.height,
+          height: height,
         ),
       ),
     );
