@@ -9,7 +9,7 @@ class SubstationModel {
   LTModel lt = LTModel(0, 0, 0, 0);
   List<transformerModel> trList = [];
   RMUModel rmu = RMUModel(0, 0);
-  locationPoint location = locationPoint(0, 0);
+  LocationPoint location = LocationPoint(0, 0);
   SubstationModel(
       this.id, this.name, this.lt, this.trList, this.rmu, this.location);
   factory SubstationModel.fromJson(Map<String, dynamic> json) {
@@ -23,7 +23,7 @@ class SubstationModel {
             : LTModel(0, 0, 0, 0),
         transformers,
         (json['rmu'] != null) ? RMUModel.fromJson(json['rmu']) : RMUModel(0, 0),
-        locationPoint.fromJson(json['location']));
+        LocationPoint.fromJson(json['location']));
   }
   Map toJson() => {
         "name": name,

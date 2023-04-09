@@ -28,9 +28,11 @@ class _SubstationWidgetState extends State<SubstationWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Rmu gesture image
               Center(
                   child: ImageGesture('assets/images/RMU.png', 20,
                       'RMU Information', RMUForm(RMUModel(0, 0)))),
+              // list of transformers gesture image
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -71,6 +73,7 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                           )))
                 ],
               ),
+              // LT panel gesture image
               ImageGesture('assets/images/LT_Panel.png', 70,
                   'LT Panel Information', LTPanelForm(LTModel(0, 0, 0, 0))),
             ],

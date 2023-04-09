@@ -97,7 +97,7 @@ class _LTPanelFormState extends State<LTPanelForm> {
                               borderRadius: BorderRadius.circular(5)),
                         ),
                         onChanged: (v) {
-                          // this.widget.cabel.name = v;
+                          // this.widget.cable.name = v;
                         },
                       ),
                     ),

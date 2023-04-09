@@ -1,55 +1,40 @@
-import 'package:flutter/material.dart';
+class CableModel {
+  String id;
+  late Map<String, dynamic> properties;
+  List<LocationPoint> locationPoints;
+  // String id = "";
+  // String name = "";
+  // double rating = 0;
+  // List<LocationPoint> points = [];
+  // String startingLocation = "";
+  // String endingLocation = "";
+  // String nextMant = "";
+  // int yearOfManufacture = 0;
 
-class cableModel {
-  String id = "";
-  String name = "";
-  double rating = 0;
-  List<locationPoint> points = [];
-  String startingLocation = "";
-  String endingLocation = "";
-  String nextMant = "";
-  int yearOfManufacture = 0;
-
-  cableModel(
-      this.id,
-      this.name,
-      this.rating,
-      this.points,
-      this.startingLocation,
-      this.endingLocation,
-      this.nextMant,
-      this.yearOfManufacture);
-  factory cableModel.fromJson(Map<String, dynamic> json) {
-    List<locationPoint> listPoints = List<locationPoint>.from(
-        json['point_locations'].map((p) => locationPoint.fromJson(p)).toList());
-    return cableModel(
-        json['_id'],
-        json['name'],
-        json['rating'].toDouble(),
-        listPoints,
-        json['starting_location'],
-        json['ending_location'],
-        json['next_maintenance'],
-        json['year_of_manufacture']);
+  CableModel(this.id, this.properties, this.locationPoints);
+  factory CableModel.fromJson(Map<String, dynamic> json) {
+    List<LocationPoint> listPoints = List<LocationPoint>.from(
+        json['point_locations'].map((p) => LocationPoint.fromJson(p)).toList());
+    return CableModel(json['_id'] as String, json['properties'], listPoints);
   }
-  Map toJson() => {
-        "name": name,
-        "rating": rating,
-        "point_locations": points.map((e) => e.toJson()).toList(),
-        "starting_location": startingLocation,
-        "ending_location": endingLocation,
-        "next_maintenance": nextMant,
-        "year_of_manufacture": yearOfManufacture
-      };
+  // Map toJson() => {
+  //       "name": name,
+  //       "rating": rating,
+  //       "point_locations": points.map((e) => e.toJson()).toList(),
+  //       "starting_location": startingLocation,
+  //       "ending_location": endingLocation,
+  //       "next_maintenance": nextMant,
+  //       "year_of_manufacture": yearOfManufacture
+  //     };
 }
 
-class locationPoint {
+class LocationPoint {
   double latitutde = 0;
   double longitude = 0;
-  locationPoint(this.latitutde, this.longitude);
+  LocationPoint(this.latitutde, this.longitude);
 
-  factory locationPoint.fromJson(List<dynamic> json) {
-    return locationPoint(json[0].toDouble(), json[1].toDouble());
+  factory LocationPoint.fromJson(List<dynamic> json) {
+    return LocationPoint(json[0].toDouble(), json[1].toDouble());
   }
 
   List<dynamic> toJson() {
