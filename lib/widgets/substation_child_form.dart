@@ -16,25 +16,25 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
   int numberOfItems = 0;
   List<String> keysList = [];
   List<TextEditingController> controllers = [];
-  List<String> values = [];
+  List<dynamic> values = [];
 
   @override
-  // void initState() {
-  //   super.initState();
-  //   // numberOfFields = widget.substationChildModel.properties.length * 2;
-  //   // keysList = widget.substationChildModel.properties.keys.toList();
-  //   // values = widget.substationChildModel.properties.values.toList();
-  //   // _controllers =
-  //   //     List.generate(2 * keysList.length, (index) => TextEditingController());
-  // }
+  void initState() {
+    super.initState();
+    numberOfItems = widget.substationChildModel.properties.length;
+    keysList = widget.substationChildModel.properties.keys.toList();
+    values = widget.substationChildModel.properties.values.toList();
+    controllers =
+        List.generate(2 * numberOfItems, (index) => TextEditingController());
+  }
 
-  // @override
-  // void dispose() {
-  //   for (var element in _controllers) {
-  //     element.dispose(); // to avoid memory leaks
-  //   }
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    for (var element in controllers) {
+      element.dispose(); // to avoid memory leaks
+    }
+    super.dispose();
+  }
 
   void addNewTextField() {
     setState(() {
@@ -44,7 +44,6 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
       keysList.add('Property Name Untitled');
       // Give untitled as default value
       values.add('Property Value Untitled');
-      print(numberOfItems);
     });
   }
 
@@ -172,7 +171,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                 ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      // TODO:update the child model in backend.
+                      //TODO:update the child model in backend.
                       // first query based the required child based on substation id
                       // then update it.
                     },

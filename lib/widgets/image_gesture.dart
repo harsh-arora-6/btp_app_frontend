@@ -12,6 +12,9 @@ class ImageGesture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onLongPress: () {
+        //TODO:show alert for deleting if its a transformer
+      },
       onTap: () {
         print('Image Gesture');
         showModalBottomSheet(

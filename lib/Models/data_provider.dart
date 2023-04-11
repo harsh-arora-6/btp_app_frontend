@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../Substation.dart';
 import '../Utilities/icon_from_image.dart';
 import '../Utilities/location.dart';
+import '../Utilities/substation_api.dart';
 import '../widgets/cable_form.dart';
 import 'line_model.dart';
 import 'substation_child_model.dart';
@@ -153,6 +154,7 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
+  // puts marker to current location with the given id
   Future<Marker> markerProperties(LatLng currentLocation, String id) async {
     final Uint8List customIcon = await getBytesFromAsset(
         path: 'assets/images/substation.png', width: 120);
@@ -204,7 +206,7 @@ class DataProvider extends ChangeNotifier {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SubstationWidget(),
+                SubstationWidget(id),
               ],
             ),
             LatLng(currentLocation.latitude, currentLocation.longitude),
@@ -212,31 +214,37 @@ class DataProvider extends ChangeNotifier {
         });
   }
 
-  // void _addPoleMarker() async {
-  //   Position currentLocation = await Location().getCurrentLocation();
-  //   substation.location =
-  //       LocationPoint(currentLocation.latitude, currentLocation.longitude);
-  //
-  //   Marker marker = await markerProperties(
-  //       LatLng(currentLocation.latitude, currentLocation.longitude),
-  //       "${currentLocation.latitude} " + "${currentLocation.longitude}");
-  //
-  //   _markers[MarkerId(
-  //           "${currentLocation.latitude} " + "${currentLocation.longitude}")] =
-  //       marker;
-  //
-  //   createSubstation(substation).then((substation) async {
-  //     substations.add(substation);
-  //     _markers.remove(marker);
-  //     Marker marker2 = await markerProperties(
-  //         LatLng(currentLocation.latitude, currentLocation.longitude),
-  //         substation.id);
-  //     _markers[MarkerId(substation.id)] = marker2;
-  //   });
-  //   Location().animateToCurrent(
-  //       LatLng(currentLocation.latitude, currentLocation.longitude));
-  // }
+  // puts marker to newly created substation
+  void addPoleMarker() async {
+    Position currentLocation = await Location().getCurrentLocation();
+    substation.location =
+        LocationPoint(currentLocation.latitude, currentLocation.longitude);
 
+    Marker marker = await markerProperties(
+        LatLng(currentLocation.latitude, currentLocation.longitude),
+        "${currentLocation.latitude} " + "${currentLocation.longitude}");
+
+    _markers[MarkerId(
+            "${currentLocation.latitude} " + "${currentLocation.longitude}")] =
+        marker;
+
+    createSubstation(substation).then((substation) async {
+      // substations.add(substation);
+      _markers.remove(marker);
+
+      Marker marker2 = await markerProperties(
+          LatLng(currentLocation.latitude, currentLocation.longitude),
+          substation.id);
+      _markers[MarkerId(substation.id)] = marker2;
+    });
+    Location().animateToCurrent(
+        LatLng(currentLocation.latitude, currentLocation.longitude),
+        controller);
+
+    notifyListeners();
+  }
+
+  // puts marker to given substation
   void addApiMarkers(SubstationModel substation) async {
     Marker marker = await markerProperties(
         LatLng(substation.location.latitutde, substation.location.longitude),

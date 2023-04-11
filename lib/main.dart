@@ -142,15 +142,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   // Button for adding substation
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: FilledButton(
-                  //       onPressed: () {
-                  //         // createSubstation(substation);
-                  //         _addPoleMarker();
-                  //       },
-                  //       child: Text("Add substation")),
-                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FilledButton(
+                        onPressed: () {
+                          // create a new substation and add marker to it.
+                          data.addPoleMarker();
+                        },
+                        child: Text("Add substation")),
+                  ),
                   // Button appearing to confirm line creation
                   // Padding(
                   //   padding: const EdgeInsets.all(8.0),

@@ -2,16 +2,45 @@ import 'package:btp_app_mac/widgets/image_gesture.dart';
 import 'package:btp_app_mac/widgets/substation_child_form.dart';
 import 'package:flutter/material.dart';
 import 'package:btp_app_mac/Models/substation_child_model.dart';
+import 'package:btp_app_mac/Utilities/substation_child_api.dart';
 
 class SubstationWidget extends StatefulWidget {
-  const SubstationWidget({Key? key}) : super(key: key);
-
+  final String substationId;
+  const SubstationWidget(this.substationId, {super.key});
   @override
   State<SubstationWidget> createState() => _SubstationWidgetState();
 }
 
 class _SubstationWidgetState extends State<SubstationWidget> {
-  List<int> transformers = [0, 1];
+  SubstationChildModel rmu = SubstationChildModel(
+      "rmu_id", <String, dynamic>{}, "parent substation id");
+  SubstationChildModel ltpanel = SubstationChildModel(
+      "ltpanel_id", <String, dynamic>{}, "parent substation id");
+  List<SubstationChildModel> transformers = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // second parameter is used in url.
+    getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu')
+        .then((rmuData) {
+      rmu = rmuData;
+    }).catchError((onError) {
+      throw Exception(onError);
+    });
+    getSubstationChildBasedOnSubstationId(widget.substationId, 'ltpanel')
+        .then((ltpanelData) {
+      ltpanel = ltpanelData;
+    }).catchError((onError) {
+      throw Exception(onError);
+    });
+    getAllSubstationChild(widget.substationId, 'transformer').then((trList) {
+      transformers = trList;
+    }).catchError((onError) {
+      throw Exception(onError);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,8 +59,7 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                   'RMU Information',
                   SubstationChildForm(
                     'Rmu',
-                    SubstationChildModel(
-                        "rmu_id", <String, dynamic>{}, "parent substation id"),
+                    rmu,
                   ),
                 ),
               ),
@@ -51,24 +79,22 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                             return ImageGesture(
                               'assets/images/transformer.png',
                               10,
-                              'T1 Information',
+                              'T$i Information',
                               SubstationChildForm(
                                 'Transformer',
-                                SubstationChildModel(
-                                    "Transformer_id",
-                                    <String, dynamic>{},
-                                    "parent substation id"),
+                                transformers[i],
                               ),
                             );
                           }),
                     ),
                   ),
+                  //TODO:transformer add button:-create new transformer
                   GestureDetector(
                     onTap: () {
                       setState(() {
                         //TODO: create a new transformer
-                        transformers.add(1);
-                        print(transformers.length);
+                        // transformers.add(1);
+                        // print(transformers.length);
                       });
                     },
                     child: Container(
@@ -92,8 +118,7 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                 'LT Panel Information',
                 SubstationChildForm(
                   'LT Panel',
-                  SubstationChildModel("LTpanel_id", <String, dynamic>{},
-                      "parent substation id"),
+                  ltpanel,
                 ),
               ),
             ],
