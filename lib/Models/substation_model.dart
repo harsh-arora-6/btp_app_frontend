@@ -1,5 +1,4 @@
 import 'substation_child_model.dart';
-import 'package:btp_app_mac/Models/TransformerModel.dart';
 import 'package:btp_app_mac/Models/line_model.dart';
 
 class SubstationModel {
@@ -39,8 +38,11 @@ class SubstationModel {
                 "ltpanel_id", <String, dynamic>{}, "parent substation id"),
         LocationPoint.fromJson(json['location']));
   }
-  // Map toJson() => {
-  //       "name": name,
-  //       "location": location.toJson(),
-  //     };
+  Map toJson() => {
+        "properties": properties,
+        "location": location.toJson(),
+        "rmu": rmu,
+        "ltpanel": ltpanel,
+        "transformers": trList.map((tr) => tr.toJson())
+      };
 }

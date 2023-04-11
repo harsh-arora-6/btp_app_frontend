@@ -11,5 +11,5 @@ class SubstationChildModel {
         json['substation'] as String);
   }
 
-// Map toJson() => {"circuit_breaker_rating": cktBkrRating, "way": way};
+  Map toJson() => {"properties": properties, "substation": parentSubstationId};
 }

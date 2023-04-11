@@ -1,5 +1,3 @@
-import 'package:btp_app_mac/Models/TransformerModel.dart';
-import 'package:btp_app_mac/widgets/substation_child_form.dart';
 import 'package:flutter/material.dart';
 
 class ImageGesture extends StatelessWidget {
@@ -15,7 +13,9 @@ class ImageGesture extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        print('Image Gesture');
         showModalBottomSheet(
+            isScrollControlled: true,
             context: context,
             builder: (context) {
               return formWidget;

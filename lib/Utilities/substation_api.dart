@@ -21,21 +21,22 @@ Future<List<SubstationModel>> getSubstationData() async {
   throw Exception("failed to load substation");
 }
 
-// Future<SubstationModel> createSubstation(SubstationModel substation) async {
-//   print("creating substation");
-//   var body = substation.toJson();
-//   print(jsonEncode(body));
-//
-//   http.Response response = await http.post(
-//       Uri.parse('$baseUrl/substations/createsubstation'),
-//       body: jsonEncode(body),
-//       headers: {'Content-Type': 'application/json'});
-//   print(response.body);
-//   var data = jsonDecode(response.body)['data'];
-//   SubstationModel substationModel = SubstationModel.fromJson(data);
-//   return substationModel;
-//
-//   //catch(e){
-//   //throw Exception(e);
-// //  }
-// }
+Future<SubstationModel> createSubstation(SubstationModel substation) async {
+  print("creating substation");
+  var body = substation.toJson();
+  print(jsonEncode(body));
+
+  http.Response response = await http.post(
+      Uri.parse('$baseUrl/substations/createsubstation'),
+      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'});
+  print(response.body);
+  var data = jsonDecode(response.body)['data'];
+  SubstationModel substationModel = SubstationModel.fromJson(data);
+  // create rmu,lt panel
+  return substationModel;
+
+  //catch(e){
+  //throw Exception(e);
+//  }
+}

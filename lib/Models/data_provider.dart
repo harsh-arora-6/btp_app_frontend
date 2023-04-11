@@ -9,7 +9,6 @@ import '../Utilities/icon_from_image.dart';
 import '../Utilities/location.dart';
 import '../widgets/cable_form.dart';
 import 'line_model.dart';
-import 'substation_model.dart';
 import 'substation_child_model.dart';
 
 class DataProvider extends ChangeNotifier {

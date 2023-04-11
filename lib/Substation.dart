@@ -64,22 +64,25 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                     ),
                   ),
                   GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          transformers.add(1);
-                          print(transformers.length);
-                        });
-                      },
-                      child: Container(
-                          decoration: const BoxDecoration(
-                              color: Colors.black, shape: BoxShape.circle),
-                          child: const Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                          )))
+                    onTap: () {
+                      setState(() {
+                        //TODO: create a new transformer
+                        transformers.add(1);
+                        print(transformers.length);
+                      });
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          color: Colors.black, shape: BoxShape.circle),
+                      child: const Padding(
+                        padding: EdgeInsets.all(2.0),
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
               // LT panel gesture image
