@@ -3,7 +3,6 @@ import 'package:btp_app_mac/Models/substation_child_model.dart';
 import 'package:btp_app_mac/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../Models/line_model.dart';
 import '../Models/substation_model.dart';
 import 'package:btp_app_mac/Utilities/substation_child_api.dart';
 
@@ -28,7 +27,7 @@ Future<List<SubstationModel>> getAllSubstationsData() async {
 Future<SubstationModel> getSubstation(String substationId) async {
   try {
     http.Response response = await http
-        .patch(Uri.parse('$baseUrl/substations/substation/$substationId'));
+        .get(Uri.parse('$baseUrl/substations/substation/$substationId'));
     Map resp = jsonDecode(response.body);
     print('getSubstation');
     print(resp);
@@ -75,11 +74,10 @@ Future<SubstationModel> createSubstation(SubstationModel substation) async {
           'ltpanel');
       newSubstation.rmu = rmu;
       newSubstation.ltpanel = ltpanel;
+      newSubstation.trList = [];
       SubstationModel updatedNewSubstation =
           await updateSubstation(newSubstation);
       return updatedNewSubstation;
-      SubstationModel updatedSubstation = SubstationModel.fromJson(data);
-      return updatedSubstation;
     } else {
       throw Exception(resp['message']);
     }
@@ -111,6 +109,27 @@ Future<SubstationModel> updateSubstation(SubstationModel substation) async {
       return updatedSubstation;
     } else {
       throw Exception(resp['message']);
+    }
+  } catch (error) {
+    throw Exception(error);
+  }
+  //catch(e){
+  //throw Exception(e);
+//  }
+}
+
+Future<void> deleteSubstation(String substationId) async {
+  try {
+    http.Response response = await http
+        .delete(Uri.parse('$baseUrl/substations/substation/$substationId'));
+    Map resp = jsonDecode(response.body);
+    print('deleteSubstation');
+    print(resp);
+    if (resp['message'] == 'Task Successful') {
+    } else {
+      if (kDebugMode) {
+        print(resp['message']);
+      }
     }
   } catch (error) {
     throw Exception(error);

@@ -207,6 +207,20 @@ class DataProvider extends ChangeNotifier {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SubstationWidget(id),
+                TextButton(
+                  onPressed: () {
+                    //todo:remove marker from front end and backend
+                    // Navigator.pop(context);
+                    removeMarker(id);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                  child: const Text('Delete Substation'),
+                )
               ],
             ),
             LatLng(currentLocation.latitude, currentLocation.longitude),
@@ -214,23 +228,39 @@ class DataProvider extends ChangeNotifier {
         });
   }
 
+  void removeMarker(String id) async {
+    // remove from backend
+    await deleteSubstation(id);
+    //remove from frontend
+    _markers.remove(MarkerId(id));
+
+    notifyListeners();
+  }
+
   // puts marker to newly created substation
   void addPoleMarker() async {
     Position currentLocation = await Location().getCurrentLocation();
     substation.location =
         LocationPoint(currentLocation.latitude, currentLocation.longitude);
-
-    Marker marker = await markerProperties(
-        LatLng(currentLocation.latitude, currentLocation.longitude),
-        "${currentLocation.latitude} " + "${currentLocation.longitude}");
+    final Uint8List customIcon = await getBytesFromAsset(
+        path: 'assets/images/substation.png', width: 120);
+    // just putting dummy icon on front end
+    Marker marker = Marker(
+      markerId: MarkerId(
+          "${currentLocation.latitude} " + "${currentLocation.longitude}"),
+      position: LatLng(currentLocation.latitude, currentLocation.longitude),
+      icon: BitmapDescriptor.fromBytes(customIcon),
+    );
 
     _markers[MarkerId(
             "${currentLocation.latitude} " + "${currentLocation.longitude}")] =
         marker;
+    //create substation
     createSubstation(substation).then((substation) async {
       // substations.add(substation);
-      _markers.remove(marker);
-
+      _markers.remove(MarkerId(
+          "${currentLocation.latitude} " + "${currentLocation.longitude}"));
+      // add actual marker
       Marker marker2 = await markerProperties(
           LatLng(currentLocation.latitude, currentLocation.longitude),
           substation.id);
