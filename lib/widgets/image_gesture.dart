@@ -14,6 +14,38 @@ class ImageGesture extends StatelessWidget {
     return GestureDetector(
       onLongPress: () {
         //TODO:show alert for deleting if its a transformer
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Delete Transformer?"),
+              content: const Text("Are you sure you want to delete this item?"),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text("CANCEL"),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text("DELETE"),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red),
+                  ),
+                  onPressed: () {
+                    // perform delete operation here
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       },
       onTap: () {
         print('Image Gesture');

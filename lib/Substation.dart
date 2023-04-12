@@ -1,3 +1,4 @@
+import 'package:btp_app_mac/Utilities/transformer_api.dart';
 import 'package:btp_app_mac/widgets/image_gesture.dart';
 import 'package:btp_app_mac/widgets/substation_child_form.dart';
 import 'package:flutter/material.dart';
@@ -21,24 +22,24 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // second parameter is used in url.
-    getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu')
-        .then((rmuData) {
-      rmu = rmuData;
-    }).catchError((onError) {
-      throw Exception(onError);
-    });
-    getSubstationChildBasedOnSubstationId(widget.substationId, 'ltpanel')
-        .then((ltpanelData) {
-      ltpanel = ltpanelData;
-    }).catchError((onError) {
-      throw Exception(onError);
-    });
-    getAllSubstationChild(widget.substationId, 'transformer').then((trList) {
-      transformers = trList;
-    }).catchError((onError) {
-      throw Exception(onError);
-    });
+    // // second parameter is used in url.
+    // getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu')
+    //     .then((rmuData) {
+    //   rmu = rmuData;
+    // }).catchError((onError) {
+    //   throw Exception(onError);
+    // });
+    // getSubstationChildBasedOnSubstationId(widget.substationId, 'ltpanel')
+    //     .then((ltpanelData) {
+    //   ltpanel = ltpanelData;
+    // }).catchError((onError) {
+    //   throw Exception(onError);
+    // });
+    // getAllSubstationChild(widget.substationId, 'transformer').then((trList) {
+    //   transformers = trList;
+    // }).catchError((onError) {
+    //   throw Exception(onError);
+    // });
   }
 
   @override
@@ -91,10 +92,18 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                   //TODO:transformer add button:-create new transformer
                   GestureDetector(
                     onTap: () {
-                      setState(() {
+                      setState(() async {
                         //TODO: create a new transformer
-                        // transformers.add(1);
-                        // print(transformers.length);
+                        try {
+                          SubstationChildModel newTransformer =
+                              await createTransformer(
+                                  SubstationChildModel('id',
+                                      <String, dynamic>{}, widget.substationId),
+                                  'transformer');
+                          transformers.add(newTransformer);
+                        } catch (error) {
+                          throw Exception(error);
+                        }
                       });
                     },
                     child: Container(

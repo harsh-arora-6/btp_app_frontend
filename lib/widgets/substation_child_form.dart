@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:btp_app_mac/Utilities/substation_child_api.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/substation_child_model.dart';
@@ -48,7 +48,6 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
   }
 
   void removeTextField(int idx) {
-    // TODO:somehow we need to find the key associated
     setState(() {
       numberOfItems = numberOfItems - 1;
       controllers.removeAt(2 * idx);
@@ -56,6 +55,19 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
       keysList.removeAt(idx);
       values.removeAt(idx);
     });
+  }
+
+  Future<void> update() async {
+    Map<String, dynamic> properties = {};
+    for (int i = 0; i < numberOfItems; i++) {
+      properties[keysList[i]] = values[i];
+    }
+    String id = widget.substationChildModel.id;
+    Map<String, dynamic> childProperties = properties;
+    String parentSubstationId = widget.substationChildModel.parentSubstationId;
+    await updateSubstationChild(
+        SubstationChildModel(id, childProperties, parentSubstationId),
+        widget.childName);
   }
 
   @override
@@ -72,9 +84,9 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                // label = RMU data
+                // label = ${childName} data
                 Padding(
-                  padding: EdgeInsets.all(6.0),
+                  padding: const EdgeInsets.all(6.0),
                   child: Text(
                     '${widget.childName} Data',
                     style: TextStyle(fontSize: 20),
@@ -101,12 +113,13 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                                         borderRadius: BorderRadius.circular(5)),
                                   ),
                                   onChanged: (v) {
-                                    // this.widget.transformer.name = v;
+                                    keysList[index] =
+                                        controllers[2 * index].text;
                                   },
                                 ),
                               ),
                               // space between property name and value.
-                              SizedBox(
+                              const SizedBox(
                                 width: 10.0,
                               ),
                               // property value
@@ -120,7 +133,8 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                                         borderRadius: BorderRadius.circular(5)),
                                   ),
                                   onChanged: (v) {
-                                    // this.widget.transformer.name = v;
+                                    values[index] =
+                                        controllers[2 * index + 1].text;
                                   },
                                 ),
                               ),
@@ -150,6 +164,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                         );
                       }),
                 ),
+                //Add button
                 GestureDetector(
                   onTap: () {
                     // add new text fields.
@@ -169,11 +184,12 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                 ),
                 // save button
                 ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
+                    onPressed: () async {
                       //TODO:update the child model in backend.
                       // first query based the required child based on substation id
                       // then update it.
+                      await update();
+                      Navigator.pop(context);
                     },
                     child: const Text("Save"))
               ],

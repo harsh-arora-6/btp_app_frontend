@@ -227,7 +227,6 @@ class DataProvider extends ChangeNotifier {
     _markers[MarkerId(
             "${currentLocation.latitude} " + "${currentLocation.longitude}")] =
         marker;
-
     createSubstation(substation).then((substation) async {
       // substations.add(substation);
       _markers.remove(marker);

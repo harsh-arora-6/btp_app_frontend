@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
-    getSubstationData().then((substationList) {
+    getAllSubstationsData().then((substationList) {
       for (var substation in substationList) {
         Provider.of<DataProvider>(context, listen: false)
             .addApiMarkers(substation);

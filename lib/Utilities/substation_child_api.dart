@@ -9,7 +9,7 @@ Future<SubstationChildModel> createSubstationChild(
     // print("creating substation child :- $childType");
     var body = substationChild.toJson();
     // print(jsonEncode(body));
-
+    // print('hello');
     http.Response response = await http.post(
         Uri.parse('$baseUrl/${childType}s/create$childType'),
         body: jsonEncode(body),
@@ -18,6 +18,7 @@ Future<SubstationChildModel> createSubstationChild(
     var data = jsonDecode(response.body)['data'];
     SubstationChildModel newSubstationChild =
         SubstationChildModel.fromJson(data);
+    print('created $childType');
     return newSubstationChild;
   } catch (error) {
     throw Exception(error);
