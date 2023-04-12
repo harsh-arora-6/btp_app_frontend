@@ -91,20 +91,20 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                   ),
                   //TODO:transformer add button:-create new transformer
                   GestureDetector(
-                    onTap: () {
-                      setState(() async {
-                        //TODO: create a new transformer
-                        try {
-                          SubstationChildModel newTransformer =
-                              await createTransformer(
-                                  SubstationChildModel('id',
-                                      <String, dynamic>{}, widget.substationId),
-                                  'transformer');
+                    onTap: () async {
+                      //TODO: create a new transformer
+                      try {
+                        SubstationChildModel newTransformer =
+                            await createTransformer(
+                                SubstationChildModel('id', <String, dynamic>{},
+                                    widget.substationId),
+                                'transformer');
+                        setState(() {
                           transformers.add(newTransformer);
-                        } catch (error) {
-                          throw Exception(error);
-                        }
-                      });
+                        });
+                      } catch (error) {
+                        throw Exception(error);
+                      }
                     },
                     child: Container(
                       decoration: const BoxDecoration(

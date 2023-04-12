@@ -6,7 +6,8 @@ import '../Models/substation_child_model.dart';
 class SubstationChildForm extends StatefulWidget {
   final String childName;
   final SubstationChildModel substationChildModel;
-  SubstationChildForm(this.childName, this.substationChildModel, {super.key});
+  const SubstationChildForm(this.childName, this.substationChildModel,
+      {super.key});
 
   @override
   State<SubstationChildForm> createState() => _SubstationChildFormState();

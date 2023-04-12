@@ -29,9 +29,17 @@ Future<SubstationModel> getSubstation(String substationId) async {
   try {
     http.Response response = await http
         .patch(Uri.parse('$baseUrl/substations/substation/$substationId'));
-    var data = jsonDecode(response.body)['data'];
-    SubstationModel substation = SubstationModel.fromJson(data);
-    return substation;
+    Map resp = jsonDecode(response.body);
+    print('getSubstation');
+    print(resp);
+    if (resp['message'] == 'Task Successful') {
+      var data = jsonDecode(response.body)['data'];
+      SubstationModel substation = SubstationModel.fromJson(data);
+      // print(substation);
+      return substation;
+    } else {
+      throw Exception(resp['message']);
+    }
   } catch (error) {
     throw Exception(error);
   }
@@ -91,13 +99,15 @@ Future<SubstationModel> updateSubstation(SubstationModel substation) async {
         body: jsonEncode(body),
         headers: {'Content-Type': 'application/json'});
     // print(response.body);
-    print('updateSubstation');
+    // print('updateSubstation');
     Map<String, dynamic> resp = jsonDecode(response.body);
     if (resp['message'] == "Task Successful") {
       var data = resp['data'];
       // print(data.runtimeType);
-      print(response.body);
+      // print(response.body);
       SubstationModel updatedSubstation = SubstationModel.fromJson(data);
+      print('updateSubstation');
+      // print(updatedSubstation);
       return updatedSubstation;
     } else {
       throw Exception(resp['message']);

@@ -15,11 +15,16 @@ Future<SubstationChildModel> createSubstationChild(
         body: jsonEncode(body),
         headers: {'Content-Type': 'application/json'});
     // print(response.body);
-    var data = jsonDecode(response.body)['data'];
-    SubstationChildModel newSubstationChild =
-        SubstationChildModel.fromJson(data);
-    print('created $childType');
-    return newSubstationChild;
+    var resp = jsonDecode(response.body);
+    if (resp['message'] == 'Task Successful') {
+      var data = resp['data'];
+      SubstationChildModel newSubstationChild =
+          SubstationChildModel.fromJson(data);
+      print('created $childType');
+      return newSubstationChild;
+    } else {
+      throw Exception(resp['message']);
+    }
   } catch (error) {
     throw Exception(error);
   }

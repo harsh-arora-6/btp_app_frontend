@@ -8,6 +8,7 @@ import '../Models/substation_child_model.dart';
 Future<SubstationChildModel> createTransformer(
     SubstationChildModel substationChild, String childType) async {
   try {
+    // print(substationChild.parentSubstationId.runtimeType);
     // print("creating substation child :- $childType");
     var body = substationChild.toJson();
     // print(jsonEncode(body));
@@ -18,17 +19,24 @@ Future<SubstationChildModel> createTransformer(
         body: jsonEncode(body),
         headers: {'Content-Type': 'application/json'});
     // print(response.body);
-    var data = jsonDecode(response.body)['data'];
-    SubstationChildModel newSubstationChild =
-        SubstationChildModel.fromJson(data);
+    var resp = jsonDecode(response.body);
+    print(resp);
+    if (resp['message'] == 'Task Successful') {
+      var data = resp['data'];
+      print(data);
+      SubstationChildModel newSubstationChild =
+          SubstationChildModel.fromJson(data);
 
-    // add this to parent substation
-    SubstationModel substation =
-        await getSubstation(substationChild.parentSubstationId);
-    substation.trList.add(substationChild);
-    await updateSubstation(substation);
+      // add this to parent substation
+      SubstationModel substation =
+          await getSubstation(substationChild.parentSubstationId);
+      substation.trList.add(newSubstationChild);
+      await updateSubstation(substation);
 
-    return newSubstationChild;
+      return newSubstationChild;
+    } else {
+      throw Exception(resp['message']);
+    }
   } catch (error) {
     throw Exception(error);
   }
