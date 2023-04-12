@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ImageGesture extends StatelessWidget {
@@ -5,8 +6,11 @@ class ImageGesture extends StatelessWidget {
   final double height;
   final String id;
   final Widget formWidget;
-
+  final Function getData;
+  final void Function(int)? removeTransformer;
+  final int? transformerId;
   const ImageGesture(this.asset, this.height, this.id, this.formWidget,
+      this.getData, this.removeTransformer, this.transformerId,
       {super.key});
 
   @override
@@ -14,41 +18,49 @@ class ImageGesture extends StatelessWidget {
     return GestureDetector(
       onLongPress: () {
         //TODO:show alert for deleting if its a transformer
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Delete Transformer?"),
-              content: const Text("Are you sure you want to delete this item?"),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("CANCEL"),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
+        if (removeTransformer != null) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Delete Transformer?"),
+                content:
+                    const Text("Are you sure you want to delete this item?"),
+                actions: <Widget>[
+                  TextButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("CANCEL"),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text("DELETE"),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
+                  TextButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red),
+                    ),
+                    onPressed: () {
+                      //TODO: perform delete operation here
+                      Navigator.of(context).pop();
+                      removeTransformer!(transformerId!);
+                    },
+                    child: const Text("DELETE"),
                   ),
-                  onPressed: () {
-                    // perform delete operation here
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+                ],
+              );
+            },
+          );
+        }
       },
       onTap: () {
-        print('Image Gesture');
+        if (kDebugMode) {
+          print('Image Gesture');
+        }
+        // Make get Request
+        getData();
         showModalBottomSheet(
             isScrollControlled: true,
             context: context,

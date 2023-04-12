@@ -27,6 +27,10 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
     values = widget.substationChildModel.properties.values.toList();
     controllers =
         List.generate(2 * numberOfItems, (index) => TextEditingController());
+    for (int i = 0; i < numberOfItems; i++) {
+      controllers[2 * i].text = keysList[i];
+      controllers[2 * i + 1].text = values[i];
+    }
   }
 
   @override
@@ -42,9 +46,11 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
       numberOfItems = numberOfItems + 1;
       controllers.add(TextEditingController());
       controllers.add(TextEditingController());
-      keysList.add('Property Name Untitled');
+      keysList.add('Untitled');
       // Give untitled as default value
-      values.add('Property Value Untitled');
+      values.add('Untitled');
+      // controllers[2 * numberOfItems - 1].text = keysList[numberOfItems - 1];
+      // controllers[2 * numberOfItems].text = values[numberOfItems - 1];
     });
   }
 
@@ -61,6 +67,8 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
   Future<void> update() async {
     Map<String, dynamic> properties = {};
     for (int i = 0; i < numberOfItems; i++) {
+      // if untitled property then don't update them in backend
+      if (keysList[i] == 'Untitled' || values[i] == 'Untitled') continue;
       properties[keysList[i]] = values[i];
     }
     String id = widget.substationChildModel.id;
@@ -69,6 +77,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
     await updateSubstationChild(
         SubstationChildModel(id, childProperties, parentSubstationId),
         widget.childName);
+    //TODO:make get request
   }
 
   @override
@@ -189,8 +198,8 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                       //TODO:update the child model in backend.
                       // first query based the required child based on substation id
                       // then update it.
-                      await update();
                       Navigator.pop(context);
+                      await update();
                     },
                     child: const Text("Save"))
               ],

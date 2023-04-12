@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }).catchError((error) {
       if (kDebugMode) {
-        print(error);
+        throw Exception(error);
       }
     });
   }

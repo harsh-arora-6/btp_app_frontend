@@ -23,23 +23,29 @@ class _SubstationWidgetState extends State<SubstationWidget> {
     // TODO: implement initState
     super.initState();
     // // second parameter is used in url.
-    // getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu')
-    //     .then((rmuData) {
-    //   rmu = rmuData;
-    // }).catchError((onError) {
-    //   throw Exception(onError);
-    // });
-    // getSubstationChildBasedOnSubstationId(widget.substationId, 'ltpanel')
-    //     .then((ltpanelData) {
-    //   ltpanel = ltpanelData;
-    // }).catchError((onError) {
-    //   throw Exception(onError);
-    // });
-    // getAllSubstationChild(widget.substationId, 'transformer').then((trList) {
-    //   transformers = trList;
-    // }).catchError((onError) {
-    //   throw Exception(onError);
-    // });
+    fetchData();
+  }
+
+  void fetchData() async {
+    SubstationChildModel newRmu =
+        await getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu');
+    SubstationChildModel newLtpanel =
+        await getSubstationChildBasedOnSubstationId(
+            widget.substationId, 'ltpanel');
+    List<SubstationChildModel> trList =
+        await getAllSubstationChild(widget.substationId, 'transformer');
+    setState(() {
+      rmu = newRmu;
+      ltpanel = newLtpanel;
+      transformers = trList;
+    });
+  }
+
+  void removeTransformer(int index) async {
+    await deleteSubstationChild(transformers[index], 'transformer');
+    setState(() {
+      transformers.removeAt(index);
+    });
   }
 
   @override
@@ -55,14 +61,16 @@ class _SubstationWidgetState extends State<SubstationWidget> {
               // Rmu gesture image
               Center(
                 child: ImageGesture(
-                  'assets/images/RMU.png',
-                  20,
-                  'RMU Information',
-                  SubstationChildForm(
-                    'Rmu',
-                    rmu,
-                  ),
-                ),
+                    'assets/images/RMU.png',
+                    20,
+                    'RMU Information',
+                    SubstationChildForm(
+                      'Rmu',
+                      rmu,
+                    ),
+                    fetchData,
+                    null,
+                    null),
               ),
               // list of transformers gesture image
               Row(
@@ -78,14 +86,16 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                           itemCount: transformers.length,
                           itemBuilder: (context, i) {
                             return ImageGesture(
-                              'assets/images/transformer.png',
-                              10,
-                              'T$i Information',
-                              SubstationChildForm(
-                                'Transformer',
-                                transformers[i],
-                              ),
-                            );
+                                'assets/images/transformer.png',
+                                10,
+                                'T$i Information',
+                                SubstationChildForm(
+                                  'Transformer',
+                                  transformers[i],
+                                ),
+                                fetchData,
+                                removeTransformer,
+                                i);
                           }),
                     ),
                   ),
@@ -122,14 +132,16 @@ class _SubstationWidgetState extends State<SubstationWidget> {
               ),
               // LT panel gesture image
               ImageGesture(
-                'assets/images/LT_Panel.png',
-                70,
-                'LT Panel Information',
-                SubstationChildForm(
-                  'LT Panel',
-                  ltpanel,
-                ),
-              ),
+                  'assets/images/LT_Panel.png',
+                  70,
+                  'LT Panel Information',
+                  SubstationChildForm(
+                    'ltpanel',
+                    ltpanel,
+                  ),
+                  fetchData,
+                  null,
+                  null),
             ],
           ),
         ));

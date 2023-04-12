@@ -35,7 +35,7 @@ Future<SubstationChildModel> updateSubstationChild(
   try {
     // print("creating substation child :- $childType");
     var body = substationChild.toJson();
-    // print(jsonEncode(body));
+    print('$baseUrl/${childType}s/$childType/${substationChild.id}');
 
     http.Response response = await http.patch(
         Uri.parse('$baseUrl/${childType}s/$childType/${substationChild.id}'),
@@ -43,6 +43,8 @@ Future<SubstationChildModel> updateSubstationChild(
         headers: {'Content-Type': 'application/json'});
     // print(response.body);
     var data = jsonDecode(response.body)['data'];
+    print('updateSubstationChild');
+    print(data);
     SubstationChildModel updatedSubstationChild =
         SubstationChildModel.fromJson(data);
     return updatedSubstationChild;
@@ -71,12 +73,19 @@ Future<List<SubstationChildModel>> getAllSubstationChild(
   try {
     http.Response response =
         await http.get(Uri.parse('$baseUrl/${childType}s/$substationId'));
-    // print(response.body);
-    var data = jsonDecode(response.body)['data'];
-    List<SubstationChildModel> substationChildren =
-        data.map((dataValue) => SubstationChildModel.fromJson(dataValue));
-
-    return substationChildren;
+    Map resp = jsonDecode(response.body);
+    print('getAllSubstationChild');
+    print(resp);
+    if (resp['message'] == 'Task Successful') {
+      var data = jsonDecode(response.body)['data'];
+      List<SubstationChildModel> substationChildren =
+          List<SubstationChildModel>.from(data
+              .map((dataValue) => SubstationChildModel.fromJson(dataValue))
+              .toList());
+      return substationChildren;
+    } else {
+      throw Exception(resp['message']);
+    }
   } catch (error) {
     throw Exception(error);
   }
@@ -88,12 +97,41 @@ Future<SubstationChildModel> getSubstationChildBasedOnSubstationId(
   try {
     http.Response response =
         await http.get(Uri.parse('$baseUrl/${childType}s/$substationId'));
-    // print(response.body);
-    var data = jsonDecode(response.body)['data'];
-    SubstationChildModel substationChildren =
-        SubstationChildModel.fromJson(data);
+    Map resp = jsonDecode(response.body);
+    print('getSubstationChildBasedOnSubstationId');
+    print(resp);
+    if (resp['message'] == 'Task Successful') {
+      var data = resp['data'];
+      SubstationChildModel substationChild =
+          SubstationChildModel.fromJson(data);
 
-    return substationChildren;
+      return substationChild;
+    } else {
+      throw Exception(resp['message']);
+    }
+  } catch (error) {
+    throw Exception(error);
+  }
+}
+
+Future<void> deleteSubstationChild(
+    SubstationChildModel substationChild, String childType) async {
+  try {
+    // print("creating substation child :- $childType");
+    var body = substationChild.toJson();
+    // print(jsonEncode(body));
+
+    http.Response response = await http.delete(
+        Uri.parse('$baseUrl/${childType}s/$childType/${substationChild.id}'));
+    // print(response.body);
+    Map resp = jsonDecode(response.body);
+    print('delete $childType');
+    print(resp);
+    if (resp['message'] == 'Task Successful') {
+      // var data = resp['data'];
+    } else {
+      throw Exception(resp['message']);
+    }
   } catch (error) {
     throw Exception(error);
   }
