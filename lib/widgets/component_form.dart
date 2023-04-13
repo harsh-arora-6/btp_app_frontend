@@ -1,19 +1,18 @@
-import 'package:btp_app_mac/Utilities/substation_child_api.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../Models/data_provider.dart';
+import '../Utilities/api_calls.dart';
 
-import '../Models/substation_child_model.dart';
-
-class SubstationChildForm extends StatefulWidget {
+class ComponentForm extends StatefulWidget {
   final String childName;
-  final SubstationChildModel substationChildModel;
-  const SubstationChildForm(this.childName, this.substationChildModel,
-      {super.key});
+  dynamic model;
+  ComponentForm(this.childName, this.model, {super.key});
 
   @override
-  State<SubstationChildForm> createState() => _SubstationChildFormState();
+  State<ComponentForm> createState() => _ComponentFormState();
 }
 
-class _SubstationChildFormState extends State<SubstationChildForm> {
+class _ComponentFormState extends State<ComponentForm> {
   int numberOfItems = 0;
   List<String> keysList = [];
   List<TextEditingController> controllers = [];
@@ -22,15 +21,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
   @override
   void initState() {
     super.initState();
-    numberOfItems = widget.substationChildModel.properties.length;
-    keysList = widget.substationChildModel.properties.keys.toList();
-    values = widget.substationChildModel.properties.values.toList();
-    controllers =
-        List.generate(2 * numberOfItems, (index) => TextEditingController());
-    for (int i = 0; i < numberOfItems; i++) {
-      controllers[2 * i].text = keysList[i];
-      controllers[2 * i + 1].text = values[i];
-    }
+    getDataAndFields();
   }
 
   @override
@@ -39,6 +30,33 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
       element.dispose(); // to avoid memory leaks
     }
     super.dispose();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      widget.model = await getComponent(widget.model.id, widget.childName);
+    } catch (onError) {
+      throw Exception(onError);
+    }
+  }
+
+  void getFields() {
+    setState(() {
+      numberOfItems = widget.model.properties.length;
+      keysList = widget.model.properties.keys.toList();
+      values = widget.model.properties.values.toList();
+      controllers =
+          List.generate(2 * numberOfItems, (index) => TextEditingController());
+      for (int i = 0; i < numberOfItems; i++) {
+        controllers[2 * i].text = keysList[i];
+        controllers[2 * i + 1].text = values[i].toString();
+      }
+    });
+  }
+
+  void getDataAndFields() async {
+    await fetchData();
+    getFields();
   }
 
   void addNewTextField() {
@@ -64,20 +82,28 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
     });
   }
 
-  Future<void> update() async {
+  Map<String, dynamic> getProps() {
     Map<String, dynamic> properties = {};
     for (int i = 0; i < numberOfItems; i++) {
       // if untitled property then don't update them in backend
       if (keysList[i] == 'Untitled' || values[i] == 'Untitled') continue;
       properties[keysList[i]] = values[i];
     }
-    String id = widget.substationChildModel.id;
-    Map<String, dynamic> childProperties = properties;
-    String parentSubstationId = widget.substationChildModel.parentSubstationId;
-    await updateSubstationChild(
-        SubstationChildModel(id, childProperties, parentSubstationId),
-        widget.childName);
-    //TODO:make get request
+    return properties;
+  }
+
+  Future<void> update() async {
+    try {
+      // String id = widget.model.id;
+      widget.model.properties = getProps();
+      // String parentSubstationId = widget.model.parentSubstationId;
+      widget.model = await updateComponent(widget.model, widget.childName);
+      // var newModel = await getComponent(id, widget.childName);
+      //  newModel;
+      getFields();
+    } catch (onError) {
+      throw Exception(onError);
+    }
   }
 
   @override
@@ -99,7 +125,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                   padding: const EdgeInsets.all(6.0),
                   child: Text(
                     '${widget.childName} Data',
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                 ),
                 //List of properties
@@ -138,7 +164,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                                   controller: controllers[2 * index + 1],
                                   decoration: InputDecoration(
                                     // property value
-                                    labelText: values[index],
+                                    labelText: values[index].toString(),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(5)),
                                   ),
@@ -152,7 +178,7 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () {
-                                    // TODO: add text field for new property
+                                    //remove text field
                                     removeTextField(index);
                                   },
                                   child: Container(
@@ -193,15 +219,26 @@ class _SubstationChildFormState extends State<SubstationChildForm> {
                   ),
                 ),
                 // save button
-                ElevatedButton(
-                    onPressed: () async {
-                      //TODO:update the child model in backend.
-                      // first query based the required child based on substation id
-                      // then update it.
-                      Navigator.pop(context);
-                      await update();
-                    },
-                    child: const Text("Save"))
+                Consumer<DataProvider>(
+                  builder: (context, data, child) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        // update the model at backend
+                        await update();
+                        if (widget.childName == 'cable') {
+                          //todo include feeder here also as it won't have image component like substation
+                          data.hideLineInfoWindow();
+                          //revert polyline color to red
+                          data.updatePolylineColor(widget.model.id as String);
+                        } else {
+                          // Navigator.pop(context);
+                          // data.hideMarkerInfoWindow();
+                        }
+                      },
+                      child: const Text("Save"),
+                    );
+                  },
+                ),
               ],
             ),
           ),

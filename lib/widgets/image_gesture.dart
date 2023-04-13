@@ -6,11 +6,11 @@ class ImageGesture extends StatelessWidget {
   final double height;
   final String id;
   final Widget formWidget;
-  final Function getData;
+  // final Function getData;
   final void Function(int)? removeTransformer;
-  final int? transformerId;
+  final int? transformerIdx;
   const ImageGesture(this.asset, this.height, this.id, this.formWidget,
-      this.getData, this.removeTransformer, this.transformerId,
+      this.removeTransformer, this.transformerIdx,
       {super.key});
 
   @override
@@ -45,7 +45,7 @@ class ImageGesture extends StatelessWidget {
                     onPressed: () {
                       //TODO: perform delete operation here
                       Navigator.of(context).pop();
-                      removeTransformer!(transformerId!);
+                      removeTransformer!(transformerIdx!);
                     },
                     child: const Text("DELETE"),
                   ),
@@ -60,7 +60,7 @@ class ImageGesture extends StatelessWidget {
           print('Image Gesture');
         }
         // Make get Request
-        getData();
+        // getData();
         showModalBottomSheet(
             isScrollControlled: true,
             context: context,

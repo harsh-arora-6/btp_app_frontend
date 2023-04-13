@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../Substation.dart';
+import '../Utilities/api_calls.dart';
 import '../Utilities/icon_from_image.dart';
 import '../Utilities/location.dart';
 import '../Utilities/substation_api.dart';
-import '../widgets/cable_form.dart';
+import '../widgets/component_form.dart';
 import 'line_model.dart';
 import 'substation_child_model.dart';
 
@@ -38,9 +39,17 @@ class DataProvider extends ChangeNotifier {
       SubstationChildModel(
           'ltpanel_id', <String, dynamic>{}, 'parentSubstationId'),
       LocationPoint(0.0, 0.0));
-  // List<CableModel> cables = [];
-  // List<SubstationModel> substations = [];
   LatLng currentClickedLocation = LatLng(0, 0);
+
+  void hideLineInfoWindow() {
+    customInfoWindowLineController.hideInfoWindow!();
+    notifyListeners();
+  }
+
+  void hideMarkerInfoWindow() {
+    customInfoWindowMarkerController.hideInfoWindow!();
+    notifyListeners();
+  }
 
   void updateClickLocation(LatLng position) {
     currentClickedLocation = position;
@@ -69,9 +78,9 @@ class DataProvider extends ChangeNotifier {
         // add as we will remove in next step
         currentPolylineId = PolylineId("id: ${currentLocation.latitude} " +
             "${currentLocation.longitude}");
-        if (kDebugMode) {
-          print(currentPolylineId.value);
-        }
+        // if (kDebugMode) {
+        //   print(currentPolylineId.value);
+        // }
         _polylines[currentPolylineId] = (Polyline(
           polylineId: currentPolylineId,
           consumeTapEvents: true,
@@ -84,7 +93,7 @@ class DataProvider extends ChangeNotifier {
 
       Polyline polyline = _polylines[currentPolylineId] as Polyline;
       // remove previous entry
-      _polylines.remove(polyline);
+      _polylines.remove(currentPolylineId);
       // add current point
       polyline.points.add(
         LatLng(currentLocation.latitude, currentLocation.longitude),
@@ -94,9 +103,9 @@ class DataProvider extends ChangeNotifier {
           .toList();
       // add this updated entry
       _polylines[currentPolylineId] = polyline;
-      if (kDebugMode) {
-        print(_polylines[currentPolylineId]!.points);
-      }
+      // if (kDebugMode) {
+      //   print(_polylines[currentPolylineId]!.points);
+      // }
       Location().animateToCurrent(
           LatLng(currentLocation.latitude, currentLocation.longitude),
           controller);
@@ -109,35 +118,68 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  void addPolyLine(PolylineId id, CableModel cable) async {
-    print("adding new polyline: ${id.value}");
-    _polylines[id] = Polyline(
-        polylineId: id,
+  void addPolyLine(dynamic cable) async {
+    _polylines.remove(currentPolylineId);
+    _polylines[PolylineId(cable.id as String)] = Polyline(
+        polylineId: PolylineId(cable.id),
         consumeTapEvents: true,
         width: 3,
         color: Colors.red,
-        points: cable.locationPoints
-            .map((e) => LatLng(e.latitutde, e.longitude))
-            .toList(),
+        points: List<LatLng>.from(
+          cable.locationPoints
+              .map((e) => LatLng(e.latitutde as double, e.longitude as double))
+              .toList(),
+        ),
         onTap: () {
-          handlePolylineClick(id, cable);
+          handlePolylineClick(cable);
         });
-    print("polyline created");
+
     isPolyLineContinue = false;
-    for (Polyline p in _polylines.values) {
-      print(p.polylineId.value);
-    }
     notifyListeners();
   }
 
-  void handlePolylineClick(PolylineId polylineId, CableModel cable) async {
+  void removeLine(String id) async {
+    // remove from backend
+    await deleteComponent(id, 'cable');
+    //remove from frontend
+    _polylines.remove(PolylineId(id));
+    hideLineInfoWindow();
+    notifyListeners();
+  }
+
+  void updatePolylineColor(String id, {String color = 'red'}) {
+    PolylineId polylineId = PolylineId(id);
+    Polyline newPolyLine = _polylines[polylineId]!
+        .copyWith(colorParam: color == 'red' ? Colors.red : Colors.blue);
+    _polylines[polylineId] = newPolyLine;
+  }
+
+  void handlePolylineClick(dynamic cable) async {
     try {
-      Polyline newPolyLine =
-          _polylines[polylineId]!.copyWith(colorParam: Colors.blue);
-      _polylines[polylineId] = newPolyLine;
+      updatePolylineColor(cable.id as String, color: 'blue');
+
+      PolylineId polylineId = PolylineId(cable.id as String);
 
       customInfoWindowLineController.addInfoWindow!(
-          CableForm(cable),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ComponentForm('cable', cable),
+              TextButton(
+                onPressed: () {
+                  //todo:remove Line from front end and backend
+                  // Navigator.pop(context);
+                  removeLine(cable.id as String);
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                ),
+                child: const Text('Delete Line'),
+              )
+            ],
+          ),
           LatLng(_polylines[polylineId]!.points[0].latitude,
               _polylines[polylineId]!.points[0].longitude));
       print("animating");
@@ -186,6 +228,7 @@ class DataProvider extends ChangeNotifier {
                           if (kDebugMode) {
                             print(_markers.values.length);
                           }
+                          hideMarkerInfoWindow();
                           notifyListeners();
                         },
                         child: const Text(
@@ -209,8 +252,6 @@ class DataProvider extends ChangeNotifier {
                 SubstationWidget(id),
                 TextButton(
                   onPressed: () {
-                    //todo:remove marker from front end and backend
-                    // Navigator.pop(context);
                     removeMarker(id);
                   },
                   style: ButtonStyle(
@@ -230,21 +271,21 @@ class DataProvider extends ChangeNotifier {
 
   void removeMarker(String id) async {
     // remove from backend
-    await deleteSubstation(id);
+    await deleteComponent(id, 'substation');
     //remove from frontend
     _markers.remove(MarkerId(id));
-
+    hideMarkerInfoWindow();
     notifyListeners();
   }
 
   // puts marker to newly created substation
-  void addPoleMarker() async {
+  void addNewMarker() async {
     Position currentLocation = await Location().getCurrentLocation();
     substation.location =
         LocationPoint(currentLocation.latitude, currentLocation.longitude);
     final Uint8List customIcon = await getBytesFromAsset(
         path: 'assets/images/substation.png', width: 120);
-    // just putting dummy icon on front end
+    // just putting icon on front end
     Marker marker = Marker(
       markerId: MarkerId(
           "${currentLocation.latitude} " + "${currentLocation.longitude}"),
@@ -255,17 +296,17 @@ class DataProvider extends ChangeNotifier {
     _markers[MarkerId(
             "${currentLocation.latitude} " + "${currentLocation.longitude}")] =
         marker;
-    //create substation
-    createSubstation(substation).then((substation) async {
-      // substations.add(substation);
-      _markers.remove(MarkerId(
-          "${currentLocation.latitude} " + "${currentLocation.longitude}"));
-      // add actual marker
-      Marker marker2 = await markerProperties(
-          LatLng(currentLocation.latitude, currentLocation.longitude),
-          substation.id);
-      _markers[MarkerId(substation.id)] = marker2;
-    });
+    // create new substation
+    dynamic newSubstation = await createSubstation(substation);
+    // removing dummy marker
+    _markers.remove(MarkerId(
+        "${currentLocation.latitude} " + "${currentLocation.longitude}"));
+    // add actual marker
+    Marker marker2 = await markerProperties(
+        LatLng(currentLocation.latitude, currentLocation.longitude),
+        newSubstation.id as String);
+    _markers[MarkerId(newSubstation.id as String)] = marker2;
+
     Location().animateToCurrent(
         LatLng(currentLocation.latitude, currentLocation.longitude),
         controller);
@@ -274,13 +315,16 @@ class DataProvider extends ChangeNotifier {
   }
 
   // puts marker to given substation
-  void addApiMarkers(SubstationModel substation) async {
+  void addMarker(dynamic substation) async {
+    //put marker at substation location
     Marker marker = await markerProperties(
         LatLng(substation.location.latitutde, substation.location.longitude),
-        substation.id);
-    _markers[MarkerId(substation.id)] = marker;
+        substation.id as String);
+    _markers[MarkerId(substation.id as String)] = marker;
+
     Location().animateToCurrent(
-        LatLng(substation.location.latitutde, substation.location.longitude),
+        LatLng(substation.location.latitutde as double,
+            substation.location.longitude as double),
         controller);
 
     notifyListeners();

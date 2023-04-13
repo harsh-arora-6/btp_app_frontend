@@ -15,17 +15,14 @@ class CableModel {
   factory CableModel.fromJson(Map<String, dynamic> json) {
     List<LocationPoint> listPoints = List<LocationPoint>.from(
         json['point_locations'].map((p) => LocationPoint.fromJson(p)).toList());
-    return CableModel(json['_id'] as String, json['properties'], listPoints);
+    return CableModel(json['_id'] as String,
+        json['properties'] ?? <String, dynamic>{}, listPoints);
   }
-// Map toJson() => {
-//       "name": name,
-//       "rating": rating,
-//       "point_locations": points.map((e) => e.toJson()).toList(),
-//       "starting_location": startingLocation,
-//       "ending_location": endingLocation,
-//       "next_maintenance": nextMant,
-//       "year_of_manufacture": yearOfManufacture
-//     };
+  Map toJson() => {
+        "properties": properties,
+        "point_locations":
+            List<dynamic>.from(locationPoints.map((e) => e.toJson()).toList()),
+      };
 }
 
 class LocationPoint {

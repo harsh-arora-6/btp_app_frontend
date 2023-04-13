@@ -36,6 +36,7 @@ class Location {
     }
 
     return Geolocator.getCurrentPosition(
+        // forceAndroidLocationManager: true,
         desiredAccuracy: LocationAccuracy.best);
   }
 

@@ -1,9 +1,11 @@
 import 'package:btp_app_mac/Utilities/transformer_api.dart';
 import 'package:btp_app_mac/widgets/image_gesture.dart';
-import 'package:btp_app_mac/widgets/substation_child_form.dart';
+import 'package:btp_app_mac/widgets/component_form.dart';
 import 'package:flutter/material.dart';
 import 'package:btp_app_mac/Models/substation_child_model.dart';
 import 'package:btp_app_mac/Utilities/substation_child_api.dart';
+
+import 'Utilities/api_calls.dart';
 
 class SubstationWidget extends StatefulWidget {
   final String substationId;
@@ -13,11 +15,11 @@ class SubstationWidget extends StatefulWidget {
 }
 
 class _SubstationWidgetState extends State<SubstationWidget> {
-  SubstationChildModel rmu = SubstationChildModel(
+  dynamic rmu = SubstationChildModel(
       "rmu_id", <String, dynamic>{}, "parent substation id");
-  SubstationChildModel ltpanel = SubstationChildModel(
+  dynamic ltpanel = SubstationChildModel(
       "ltpanel_id", <String, dynamic>{}, "parent substation id");
-  List<SubstationChildModel> transformers = [];
+  List<dynamic> transformers = [];
   @override
   void initState() {
     // TODO: implement initState
@@ -27,12 +29,11 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   }
 
   void fetchData() async {
-    SubstationChildModel newRmu =
+    dynamic newRmu =
         await getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu');
-    SubstationChildModel newLtpanel =
-        await getSubstationChildBasedOnSubstationId(
-            widget.substationId, 'ltpanel');
-    List<SubstationChildModel> trList =
+    dynamic newLtpanel = await getSubstationChildBasedOnSubstationId(
+        widget.substationId, 'ltpanel');
+    List<dynamic> trList =
         await getAllSubstationChild(widget.substationId, 'transformer');
     setState(() {
       rmu = newRmu;
@@ -42,7 +43,7 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   }
 
   void removeTransformer(int index) async {
-    await deleteSubstationChild(transformers[index], 'transformer');
+    await deleteComponent(transformers[index].id as String, 'transformer');
     setState(() {
       transformers.removeAt(index);
     });
@@ -64,11 +65,10 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                     'assets/images/RMU.png',
                     20,
                     'RMU Information',
-                    SubstationChildForm(
-                      'Rmu',
+                    ComponentForm(
+                      'rmu',
                       rmu,
                     ),
-                    fetchData,
                     null,
                     null),
               ),
@@ -89,11 +89,10 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                                 'assets/images/transformer.png',
                                 10,
                                 'T$i Information',
-                                SubstationChildForm(
-                                  'Transformer',
+                                ComponentForm(
+                                  'transformer',
                                   transformers[i],
                                 ),
-                                fetchData,
                                 removeTransformer,
                                 i);
                           }),
@@ -105,10 +104,8 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                       //TODO: create a new transformer
                       try {
                         SubstationChildModel newTransformer =
-                            await createTransformer(
-                                SubstationChildModel('id', <String, dynamic>{},
-                                    widget.substationId),
-                                'transformer');
+                            await createTransformer(SubstationChildModel('id',
+                                <String, dynamic>{}, widget.substationId));
                         setState(() {
                           transformers.add(newTransformer);
                         });
@@ -135,11 +132,10 @@ class _SubstationWidgetState extends State<SubstationWidget> {
                   'assets/images/LT_Panel.png',
                   70,
                   'LT Panel Information',
-                  SubstationChildForm(
+                  ComponentForm(
                     'ltpanel',
                     ltpanel,
                   ),
-                  fetchData,
                   null,
                   null),
             ],

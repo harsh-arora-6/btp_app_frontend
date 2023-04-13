@@ -1,12 +1,11 @@
-import 'package:btp_app_mac/Utilities/cable_api.dart';
+import 'package:btp_app_mac/Models/line_model.dart';
+import 'package:btp_app_mac/Utilities/api_calls.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'Models/data_provider.dart';
 import 'package:provider/provider.dart';
-
-import 'Utilities/substation_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,29 +55,24 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     // retrieve data from database
-    getAllCables().then((cableList) {
-      for (var cableModel in cableList) {
-        Provider.of<DataProvider>(context, listen: false).addPolyLine(
-          PolylineId(cableModel.id),
-          cableModel,
-        );
-      }
-    }).catchError((error) {
-      if (kDebugMode) {
-        print(error);
-      }
-    });
+    fetchData();
+  }
 
-    getAllSubstationsData().then((substationList) {
-      for (var substation in substationList) {
-        Provider.of<DataProvider>(context, listen: false)
-            .addApiMarkers(substation);
-      }
-    }).catchError((error) {
-      if (kDebugMode) {
-        throw Exception(error);
-      }
-    });
+  void fetchData() async {
+    List<dynamic> cableList = await getAllComponent('cable');
+    List<dynamic> substationList = await getAllComponent('substation');
+
+    for (dynamic cableModel in cableList) {
+      // print(cableModel.properties);
+      Provider.of<DataProvider>(context, listen: false).addPolyLine(
+        cableModel,
+      );
+    }
+    for (dynamic substationModel in substationList) {
+      // print(cableModel.properties);
+      Provider.of<DataProvider>(context, listen: false)
+          .addMarker(substationModel);
+    }
   }
 
   @override
@@ -147,22 +141,24 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: FilledButton(
                         onPressed: () {
                           // create a new substation and add marker to it.
-                          data.addPoleMarker();
+                          data.addNewMarker();
                         },
-                        child: Text("Add substation")),
+                        child: const Text("Add substation")),
                   ),
                   // Button appearing to confirm line creation
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: (isPolyLineContinue)
-                  //       ? FilledButton(
-                  //           onPressed: () {
-                  //             _addPolyLine(currentPolylineId, currentCable);
-                  //             createCable(currentCable);
-                  //           },
-                  //           child: Text("Create"))
-                  //       : null,
-                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: (data.isPolyLineContinue)
+                        ? FilledButton(
+                            onPressed: () async {
+                              // print(data.currentCable);
+                              CableModel cable = await createComponent(
+                                  data.currentCable, 'cable');
+                              data.addPolyLine(cable);
+                            },
+                            child: const Text("Create"))
+                        : null,
+                  ),
                 ],
               )
             ],
