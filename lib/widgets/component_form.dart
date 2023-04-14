@@ -108,142 +108,165 @@ class _ComponentFormState extends State<ComponentForm> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(5)),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                // label = ${childName} data
-                Padding(
-                  padding: const EdgeInsets.all(6.0),
-                  child: Text(
-                    '${widget.childName} Data',
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ),
-                //List of properties
-                SizedBox(
-                  height: 80.0,
-                  width: 600.0,
-                  child: ListView.builder(
-                      itemCount: numberOfItems,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          title: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              // property name
-                              Expanded(
-                                child: TextField(
-                                  controller: controllers[2 * index],
-                                  decoration: InputDecoration(
-                                    labelText: keysList[index], // property name
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5)),
-                                  ),
-                                  onChanged: (v) {
-                                    keysList[index] =
-                                        controllers[2 * index].text;
-                                  },
-                                ),
-                              ),
-                              // space between property name and value.
-                              const SizedBox(
-                                width: 10.0,
-                              ),
-                              // property value
-                              Expanded(
-                                child: TextField(
-                                  controller: controllers[2 * index + 1],
-                                  decoration: InputDecoration(
-                                    // property value
-                                    labelText: values[index].toString(),
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(5)),
-                                  ),
-                                  onChanged: (v) {
-                                    values[index] =
-                                        controllers[2 * index + 1].text;
-                                  },
-                                ),
-                              ),
-                              // delete button
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    //remove text field
-                                    removeTextField(index);
-                                  },
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                        color: Colors.black,
-                                        shape: BoxShape.circle),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(2.0),
-                                      child: Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                ),
-                //Add button
-                GestureDetector(
-                  onTap: () {
-                    // add new text fields.
-                    addNewTextField();
-                  },
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.black, shape: BoxShape.circle),
-                    child: const Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
+    return Consumer<DataProvider>(
+      builder: (context, data, child) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(5)),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    // label = ${childName} data
+                    Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Text(
+                        '${widget.childName} Data',
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
-                  ),
+                    //List of properties
+                    SizedBox(
+                      height: 80.0,
+                      width: 600.0,
+                      child: ListView.builder(
+                          itemCount: numberOfItems,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  // property name
+                                  Expanded(
+                                    child: TextField(
+                                      controller: controllers[2 * index],
+                                      decoration: InputDecoration(
+                                        labelText:
+                                            keysList[index], // property name
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                      ),
+                                      onChanged: (v) {
+                                        keysList[index] =
+                                            controllers[2 * index].text;
+                                      },
+                                    ),
+                                  ),
+                                  // space between property name and value.
+                                  const SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  // property value
+                                  Expanded(
+                                    child: TextField(
+                                      controller: controllers[2 * index + 1],
+                                      decoration: InputDecoration(
+                                        // property value
+                                        labelText: values[index].toString(),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                      ),
+                                      onChanged: (v) {
+                                        values[index] =
+                                            controllers[2 * index + 1].text;
+                                      },
+                                    ),
+                                  ),
+                                  // delete button
+                                  data.user.role == 'admin'
+                                      ? Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              //remove text field
+                                              removeTextField(index);
+                                            },
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                  color: Colors.black,
+                                                  shape: BoxShape.circle),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(2.0),
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                    //Add field button
+                    data.user.role == 'admin'
+                        ? GestureDetector(
+                            onTap: () {
+                              // add new text fields.
+                              addNewTextField();
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  color: Colors.black, shape: BoxShape.circle),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    // save button
+                    data.user.role == 'admin'
+                        ? ElevatedButton(
+                            onPressed: () async {
+                              // update the model at backend
+                              await update();
+                              if (widget.childName == 'cable') {
+                                //todo include feeder here also as it won't have image component like substation
+                                data.hideLineInfoWindow();
+                                //revert polyline color to red
+                                data.updatePolylineColor(
+                                    widget.model.id as String);
+                              } else {
+                                // Navigator.pop(context);
+                                // data.hideMarkerInfoWindow();
+                              }
+                            },
+                            child: const Text("Save"),
+                          )
+                        : ElevatedButton(
+                            onPressed: () async {
+                              if (widget.childName == 'cable') {
+                                data.hideLineInfoWindow();
+                                //revert polyline color to red
+                                data.updatePolylineColor(
+                                    widget.model.id as String);
+                              } else {
+                                Navigator.pop(context);
+                                // data.hideMarkerInfoWindow();
+                              }
+                            },
+                            child: const Text("Close"),
+                          ),
+                  ],
                 ),
-                // save button
-                Consumer<DataProvider>(
-                  builder: (context, data, child) {
-                    return ElevatedButton(
-                      onPressed: () async {
-                        // update the model at backend
-                        await update();
-                        if (widget.childName == 'cable') {
-                          //todo include feeder here also as it won't have image component like substation
-                          data.hideLineInfoWindow();
-                          //revert polyline color to red
-                          data.updatePolylineColor(widget.model.id as String);
-                        } else {
-                          // Navigator.pop(context);
-                          // data.hideMarkerInfoWindow();
-                        }
-                      },
-                      child: const Text("Save"),
-                    );
-                  },
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

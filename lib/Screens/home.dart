@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../Models/data_provider.dart';
 import '../Models/line_model.dart';
 import '../Utilities/api_calls.dart';
+import '../Utilities/user_api.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -65,8 +66,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       myLocationButtonEnabled: true,
                       onTap: (position) {
                         if (kDebugMode) {
-                          print("clicked position");
+                          // print("clicked position");
                         }
+                        data.makeAllLineRed();
                         data.updateClickLocation(position);
                       },
                       onCameraMove: (position) {
@@ -94,46 +96,61 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Button for adding new line or adding point
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FilledButton(
-                      onPressed: () {
-                        data.addPolyLinePoint();
-                      },
-                      child: Text(
-                          data.isPolyLineContinue ? "Add point" : "New line"),
-                    ),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                data.user.role == 'admin'
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Button for adding new line or adding point
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FilledButton(
+                              onPressed: () {
+                                data.addPolyLinePoint();
+                              },
+                              child: Text(data.isPolyLineContinue
+                                  ? "Add point"
+                                  : "New line"),
+                            ),
+                          ),
+                          // Button for adding substation
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FilledButton(
+                                onPressed: () {
+                                  // create a new substation and add marker to it.
+                                  data.addNewMarker();
+                                },
+                                child: const Text("Add substation")),
+                          ),
+                          // Button appearing to confirm line creation
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: (data.isPolyLineContinue)
+                                ? FilledButton(
+                                    onPressed: () async {
+                                      // print(data.currentCable);
+                                      CableModel cable = await createComponent(
+                                          data.currentCable, 'cable');
+                                      data.addPolyLine(cable);
+                                    },
+                                    child: const Text("Create"))
+                                : null,
+                          ),
+                        ],
+                      )
+                    : Container(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FilledButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await logout();
+                    },
+                    child: const Text("Logout"),
                   ),
-                  // Button for adding substation
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FilledButton(
-                        onPressed: () {
-                          // create a new substation and add marker to it.
-                          data.addNewMarker();
-                        },
-                        child: const Text("Add substation")),
-                  ),
-                  // Button appearing to confirm line creation
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: (data.isPolyLineContinue)
-                        ? FilledButton(
-                            onPressed: () async {
-                              // print(data.currentCable);
-                              CableModel cable = await createComponent(
-                                  data.currentCable, 'cable');
-                              data.addPolyLine(cable);
-                            },
-                            child: const Text("Create"))
-                        : null,
-                  ),
-                ],
-              )
+                )
+              ])
             ],
           );
         },

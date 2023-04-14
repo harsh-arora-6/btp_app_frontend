@@ -1,6 +1,7 @@
 import 'package:btp_app_mac/Models/data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import '../Models/user_model.dart';
 import '../Utilities/user_api.dart';
 import 'home.dart';
@@ -97,7 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         // print('pressed');
                         //todo: get user
-                        UserModel user = await Login(email, password);
+                        Tuple2<UserModel, String> res =
+                            await login(email, password);
+                        UserModel user = res.item1;
                         data.updateUser(user);
                         if (data.user.name != '') {
                           await Navigator.of(context).push(MaterialPageRoute(
@@ -108,8 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Wrong credentials'),
-                                  content: Text('Please try again'),
+                                  title: Text('${res.item2}'),
                                   actions: <Widget>[
                                     TextButton(
                                       style: ButtonStyle(

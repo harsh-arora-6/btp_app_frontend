@@ -1,9 +1,11 @@
+import 'package:btp_app_mac/Models/data_provider.dart';
 import 'package:btp_app_mac/Utilities/transformer_api.dart';
 import 'package:btp_app_mac/widgets/image_gesture.dart';
 import 'package:btp_app_mac/widgets/component_form.dart';
 import 'package:flutter/material.dart';
 import 'package:btp_app_mac/Models/substation_child_model.dart';
 import 'package:btp_app_mac/Utilities/substation_child_api.dart';
+import 'package:provider/provider.dart';
 
 import 'Utilities/api_calls.dart';
 
@@ -51,95 +53,102 @@ class _SubstationWidgetState extends State<SubstationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Rmu gesture image
-              Center(
-                child: ImageGesture(
-                    'assets/images/RMU.png',
-                    20,
-                    'RMU Information',
+    return Consumer<DataProvider>(builder: (context, data, child) {
+      return Container(
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Rmu gesture image
+                Center(
+                  child: ImageGesture(
+                      'assets/images/RMU.png',
+                      20,
+                      'RMU Information',
+                      ComponentForm(
+                        'rmu',
+                        rmu,
+                      ),
+                      null,
+                      null),
+                ),
+                // list of transformers gesture image
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 120,
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: Center(
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: transformers.length,
+                            itemBuilder: (context, i) {
+                              return ImageGesture(
+                                  'assets/images/transformer.png',
+                                  10,
+                                  'T$i Information',
+                                  ComponentForm(
+                                    'transformer',
+                                    transformers[i],
+                                  ),
+                                  removeTransformer,
+                                  i);
+                            }),
+                      ),
+                    ),
+                    //TODO:transformer add button:-create new transformer
+                    data.user.role == 'admin'
+                        ? GestureDetector(
+                            onTap: () async {
+                              //TODO: create a new transformer
+                              try {
+                                SubstationChildModel newTransformer =
+                                    await createTransformer(
+                                        SubstationChildModel(
+                                            'id',
+                                            <String, dynamic>{},
+                                            widget.substationId));
+                                setState(() {
+                                  transformers.add(newTransformer);
+                                });
+                              } catch (error) {
+                                throw Exception(error);
+                              }
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  color: Colors.black, shape: BoxShape.circle),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container()
+                  ],
+                ),
+                // LT panel gesture image
+                ImageGesture(
+                    'assets/images/LT_Panel.png',
+                    70,
+                    'LT Panel Information',
                     ComponentForm(
-                      'rmu',
-                      rmu,
+                      'ltpanel',
+                      ltpanel,
                     ),
                     null,
                     null),
-              ),
-              // list of transformers gesture image
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 120,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: Center(
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: transformers.length,
-                          itemBuilder: (context, i) {
-                            return ImageGesture(
-                                'assets/images/transformer.png',
-                                10,
-                                'T$i Information',
-                                ComponentForm(
-                                  'transformer',
-                                  transformers[i],
-                                ),
-                                removeTransformer,
-                                i);
-                          }),
-                    ),
-                  ),
-                  //TODO:transformer add button:-create new transformer
-                  GestureDetector(
-                    onTap: () async {
-                      //TODO: create a new transformer
-                      try {
-                        SubstationChildModel newTransformer =
-                            await createTransformer(SubstationChildModel('id',
-                                <String, dynamic>{}, widget.substationId));
-                        setState(() {
-                          transformers.add(newTransformer);
-                        });
-                      } catch (error) {
-                        throw Exception(error);
-                      }
-                    },
-                    child: Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.black, shape: BoxShape.circle),
-                      child: const Padding(
-                        padding: EdgeInsets.all(2.0),
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              // LT panel gesture image
-              ImageGesture(
-                  'assets/images/LT_Panel.png',
-                  70,
-                  'LT Panel Information',
-                  ComponentForm(
-                    'ltpanel',
-                    ltpanel,
-                  ),
-                  null,
-                  null),
-            ],
-          ),
-        ));
+              ],
+            ),
+          ));
+    });
   }
 }

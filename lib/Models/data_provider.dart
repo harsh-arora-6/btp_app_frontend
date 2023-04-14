@@ -78,8 +78,8 @@ class DataProvider extends ChangeNotifier {
       Position currentLocation = await Location().getCurrentLocation();
       if (_polylines.isEmpty || !isPolyLineContinue) {
         // add as we will remove in next step
-        currentPolylineId = PolylineId("id: ${currentLocation.latitude} " +
-            "${currentLocation.longitude}");
+        currentPolylineId = PolylineId(
+            "${currentLocation.latitude} " + "${currentLocation.longitude}");
         // if (kDebugMode) {
         //   print(currentPolylineId.value);
         // }
@@ -156,6 +156,14 @@ class DataProvider extends ChangeNotifier {
     _polylines[polylineId] = newPolyLine;
   }
 
+  void makeAllLineRed() {
+    for (PolylineId polylineId in _polylines.keys) {
+      Polyline newPolyLine =
+          _polylines[polylineId]!.copyWith(colorParam: Colors.red);
+      _polylines[polylineId] = newPolyLine;
+    }
+  }
+
   void handlePolylineClick(dynamic cable) async {
     try {
       updatePolylineColor(cable.id as String, color: 'blue');
@@ -167,19 +175,22 @@ class DataProvider extends ChangeNotifier {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ComponentForm('cable', cable),
-              TextButton(
-                onPressed: () {
-                  //todo:remove Line from front end and backend
-                  // Navigator.pop(context);
-                  removeLine(cable.id as String);
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                ),
-                child: const Text('Delete Line'),
-              )
+              user.role == 'admin'
+                  ? TextButton(
+                      onPressed: () {
+                        //todo:remove Line from front end and backend
+                        // Navigator.pop(context);
+                        removeLine(cable.id as String);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.red),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: const Text('Delete Line'),
+                    )
+                  : Container()
             ],
           ),
           LatLng(_polylines[polylineId]!.points[0].latitude,
@@ -246,24 +257,36 @@ class DataProvider extends ChangeNotifier {
                 );
               });
         },
+        onDragEnd: (coordinates) async {
+          //  todo:update location in backend
+          if (!id.contains(' ')) {
+            //not a dummy marker
+            SubstationModel sub = await getComponent(id, 'substation');
+            sub.location =
+                LocationPoint(coordinates.latitude, coordinates.longitude);
+            await updateComponent(id, 'substation');
+          }
+        },
         onTap: () {
           customInfoWindowMarkerController.addInfoWindow!(
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SubstationWidget(id),
-                TextButton(
-                  onPressed: () {
-                    removeMarker(id);
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
-                  ),
-                  child: const Text('Delete Substation'),
-                )
+                user.role == 'admin'
+                    ? TextButton(
+                        onPressed: () {
+                          removeMarker(id);
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.red),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: const Text('Delete Substation'),
+                      )
+                    : Container()
               ],
             ),
             LatLng(currentLocation.latitude, currentLocation.longitude),

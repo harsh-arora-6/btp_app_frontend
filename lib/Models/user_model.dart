@@ -17,7 +17,7 @@ class UserModel {
         json['password'] as String,
         json['confirmPassword'] as String,
         json['role'] as String,
-        json['resetToken'] as String);
+        json['resetToken']);
   }
   Map toJson() => {
         "name": name,
