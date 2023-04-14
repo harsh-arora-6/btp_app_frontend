@@ -1,4 +1,5 @@
 import 'package:btp_app_mac/Models/substation_model.dart';
+import 'package:btp_app_mac/Models/user_model.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class DataProvider extends ChangeNotifier {
       CustomInfoWindowController();
   final CustomInfoWindowController customInfoWindowLineController =
       CustomInfoWindowController();
+  UserModel user = UserModel('', '', '', '', '', '', '');
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   bool isPolyLineContinue = false;
@@ -327,6 +329,11 @@ class DataProvider extends ChangeNotifier {
             substation.location.longitude as double),
         controller);
 
+    notifyListeners();
+  }
+
+  void updateUser(UserModel usr) {
+    user = usr;
     notifyListeners();
   }
 }
