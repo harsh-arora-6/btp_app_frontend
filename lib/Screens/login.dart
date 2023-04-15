@@ -76,14 +76,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   }),
             ),
             //Forget password button
-            TextButton(
-              onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
-              },
-              child: const Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
-              ),
+            // TextButton(
+            //   onPressed: () {
+            //     //TODO FORGOT PASSWORD SCREEN GOES HERE
+            //   },
+            //   child: const Text(
+            //     'Forgot Password',
+            //     style: TextStyle(color: Colors.blue, fontSize: 15),
+            //   ),
+            // ),
+            const SizedBox(
+              height: 10,
             ),
             //Login Button
             Container(
@@ -96,8 +99,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context, data, child) {
                     return TextButton(
                       onPressed: () async {
-                        // print('pressed');
-                        //todo: get user
                         Tuple2<UserModel, String> res =
                             await login(email, password);
                         UserModel user = res.item1;
