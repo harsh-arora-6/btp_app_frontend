@@ -51,10 +51,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<DataProvider>(
-        builder: (context, data, child) {
-          return Column(
+    return Consumer<DataProvider>(
+      builder: (context, data, child) {
+        return Scaffold(
+          appBar: AppBar(
+            //user name
+            title: Text(data.user.name),
+            actions: [
+              //logout button
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FilledButton(
+                  onPressed: () async {
+                    data.hideLineInfoWindow();
+                    data.hideMarkerInfoWindow();
+                    data.makeAllLineRed();
+                    Navigator.pop(context);
+                    await logout();
+                  },
+                  style: const ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.blueGrey)),
+                  child: const Text("Logout"),
+                ),
+              )
+            ],
+          ),
+          body: Column(
             children: [
               Expanded(
                 child: Stack(
@@ -70,6 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                         data.makeAllLineRed();
                         data.updateClickLocation(position);
+                        data.hideMarkerInfoWindow();
+                        data.hideLineInfoWindow();
                       },
                       onCameraMove: (position) {
                         data.cameraMove();
@@ -96,70 +121,53 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  data.user.role == 'admin'
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Button for adding new line or adding point
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: FilledButton(
-                                onPressed: () {
-                                  data.addPolyLinePoint();
-                                },
-                                child: Text(data.isPolyLineContinue
-                                    ? "Add point"
-                                    : "New line"),
-                              ),
-                            ),
-                            // Button for adding substation
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: FilledButton(
-                                  onPressed: () {
-                                    // create a new substation and add marker to it.
-                                    data.addNewMarker();
+              data.user.role == 'admin'
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Button for adding new line or adding point
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FilledButton(
+                            onPressed: () {
+                              data.addPolyLinePoint();
+                            },
+                            child: Text(data.isPolyLineContinue
+                                ? "Add point"
+                                : "New line"),
+                          ),
+                        ),
+                        // Button for adding substation
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FilledButton(
+                              onPressed: () {
+                                // create a new substation and add marker to it.
+                                data.addNewMarker();
+                              },
+                              child: const Text("Add substation")),
+                        ),
+                        // Button appearing to confirm line creation
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: (data.isPolyLineContinue)
+                              ? FilledButton(
+                                  onPressed: () async {
+                                    // print(data.currentCable);
+                                    CableModel cable = await createComponent(
+                                        data.currentCable, 'cable');
+                                    data.addPolyLine(cable);
                                   },
-                                  child: const Text("Add substation")),
-                            ),
-                            // Button appearing to confirm line creation
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: (data.isPolyLineContinue)
-                                  ? FilledButton(
-                                      onPressed: () async {
-                                        // print(data.currentCable);
-                                        CableModel cable =
-                                            await createComponent(
-                                                data.currentCable, 'cable');
-                                        data.addPolyLine(cable);
-                                      },
-                                      child: const Text("Create"))
-                                  : null,
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FilledButton(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await logout();
-                      },
-                      child: const Text("Logout"),
-                    ),
-                  )
-                ]),
-              )
+                                  child: const Text("Create"))
+                              : null,
+                        ),
+                      ],
+                    )
+                  : Container()
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

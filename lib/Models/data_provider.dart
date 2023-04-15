@@ -133,6 +133,7 @@ class DataProvider extends ChangeNotifier {
               .toList(),
         ),
         onTap: () {
+          hideMarkerInfoWindow();
           handlePolylineClick(cable);
         });
 
@@ -259,15 +260,20 @@ class DataProvider extends ChangeNotifier {
         },
         onDragEnd: (coordinates) async {
           //  todo:update location in backend
+
           if (!id.contains(' ')) {
             //not a dummy marker
             SubstationModel sub = await getComponent(id, 'substation');
             sub.location =
                 LocationPoint(coordinates.latitude, coordinates.longitude);
-            await updateComponent(id, 'substation');
+            sub = await updateComponent(sub, 'substation');
+            _markers.remove(MarkerId(id));
+            addMarker(sub);
           }
         },
         onTap: () {
+          hideLineInfoWindow();
+          makeAllLineRed();
           customInfoWindowMarkerController.addInfoWindow!(
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
