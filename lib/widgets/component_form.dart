@@ -144,6 +144,7 @@ class _ComponentFormState extends State<ComponentForm> {
                                   // property name
                                   Expanded(
                                     child: TextField(
+                                      readOnly: data.user.role != 'admin',
                                       controller: controllers[2 * index],
                                       decoration: InputDecoration(
                                         labelText:
@@ -165,6 +166,7 @@ class _ComponentFormState extends State<ComponentForm> {
                                   // property value
                                   Expanded(
                                     child: TextField(
+                                      readOnly: data.user.role != 'admin',
                                       controller: controllers[2 * index + 1],
                                       decoration: InputDecoration(
                                         // property value
@@ -227,7 +229,7 @@ class _ComponentFormState extends State<ComponentForm> {
                             ),
                           )
                         : Container(),
-                    // save button
+                    // save button or close button
                     data.user.role == 'admin'
                         ? ElevatedButton(
                             onPressed: () async {
