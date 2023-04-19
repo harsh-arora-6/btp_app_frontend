@@ -18,6 +18,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool isLoggingOut = false;
   static const CameraPosition _kBhawan = CameraPosition(
     bearing: 192.8334901395799,
     target: LatLng(29.869858078101394, 77.89556176735142),
@@ -66,6 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     data.hideLineInfoWindow();
                     data.hideMarkerInfoWindow();
                     data.makeAllLineRed();
+                    setState(() {
+                      isLoggingOut = true;
+                    });
                     Navigator.pop(context);
                     await logout();
                   },
@@ -77,95 +81,101 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ],
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: Stack(
+          body: isLoggingOut
+              ? const AlertDialog(
+                  icon: CircularProgressIndicator(),
+                  title: Text('Logging out...'),
+                )
+              : Column(
                   children: [
-                    GoogleMap(
-                      mapType: MapType.hybrid,
-                      initialCameraPosition: _kBhawan,
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      onTap: (position) {
-                        if (kDebugMode) {
-                          // print("clicked position");
-                        }
-                        data.makeAllLineRed();
-                        data.updateClickLocation(position);
-                        data.hideMarkerInfoWindow();
-                        data.hideLineInfoWindow();
-                      },
-                      onCameraMove: (position) {
-                        data.cameraMove();
-                      },
-                      // returns a controller to interact with map
-                      onMapCreated: (GoogleMapController cont) async {
-                        data.setController(cont);
-                      },
-                      markers: Set<Marker>.of(data.markers.values),
-                      polylines: Set<Polyline>.of(data.polylines.values),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          GoogleMap(
+                            mapType: MapType.hybrid,
+                            initialCameraPosition: _kBhawan,
+                            myLocationEnabled: true,
+                            myLocationButtonEnabled: true,
+                            onTap: (position) {
+                              if (kDebugMode) {
+                                // print("clicked position");
+                              }
+                              data.makeAllLineRed();
+                              data.updateClickLocation(position);
+                              data.hideMarkerInfoWindow();
+                              data.hideLineInfoWindow();
+                            },
+                            onCameraMove: (position) {
+                              data.cameraMove();
+                            },
+                            // returns a controller to interact with map
+                            onMapCreated: (GoogleMapController cont) async {
+                              data.setController(cont);
+                            },
+                            markers: Set<Marker>.of(data.markers.values),
+                            polylines: Set<Polyline>.of(data.polylines.values),
+                          ),
+                          CustomInfoWindow(
+                            controller: data.customInfoWindowLineController,
+                            height: 400,
+                            width: 320,
+                            offset: 50,
+                          ),
+                          CustomInfoWindow(
+                            controller: data.customInfoWindowMarkerController,
+                            height: 290,
+                            width: 320,
+                            offset: 50,
+                          ),
+                        ],
+                      ),
                     ),
-                    CustomInfoWindow(
-                      controller: data.customInfoWindowLineController,
-                      height: 400,
-                      width: 320,
-                      offset: 50,
-                    ),
-                    CustomInfoWindow(
-                      controller: data.customInfoWindowMarkerController,
-                      height: 290,
-                      width: 320,
-                      offset: 50,
-                    ),
+                    data.user.role == 'admin'
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Button for adding new line or adding point
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: FilledButton(
+                                  onPressed: () {
+                                    data.addPolyLinePoint();
+                                  },
+                                  child: Text(data.isPolyLineContinue
+                                      ? "Add point"
+                                      : "New line"),
+                                ),
+                              ),
+                              // Button for adding substation
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: FilledButton(
+                                    onPressed: () {
+                                      // create a new substation and add marker to it.
+                                      data.addNewMarker();
+                                    },
+                                    child: const Text("Add substation")),
+                              ),
+                              // Button appearing to confirm line creation
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: (data.isPolyLineContinue)
+                                    ? FilledButton(
+                                        onPressed: () async {
+                                          // print(data.currentCable);
+                                          CableModel cable =
+                                              await createComponent(
+                                                  data.currentCable, 'cable');
+                                          data.addPolyLine(cable);
+                                        },
+                                        child: const Text("Create"))
+                                    : null,
+                              ),
+                            ],
+                          )
+                        : Container()
                   ],
                 ),
-              ),
-              data.user.role == 'admin'
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Button for adding new line or adding point
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: FilledButton(
-                            onPressed: () {
-                              data.addPolyLinePoint();
-                            },
-                            child: Text(data.isPolyLineContinue
-                                ? "Add point"
-                                : "New line"),
-                          ),
-                        ),
-                        // Button for adding substation
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: FilledButton(
-                              onPressed: () {
-                                // create a new substation and add marker to it.
-                                data.addNewMarker();
-                              },
-                              child: const Text("Add substation")),
-                        ),
-                        // Button appearing to confirm line creation
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: (data.isPolyLineContinue)
-                              ? FilledButton(
-                                  onPressed: () async {
-                                    // print(data.currentCable);
-                                    CableModel cable = await createComponent(
-                                        data.currentCable, 'cable');
-                                    data.addPolyLine(cable);
-                                  },
-                                  child: const Text("Create"))
-                              : null,
-                        ),
-                      ],
-                    )
-                  : Container()
-            ],
-          ),
         );
       },
     );
