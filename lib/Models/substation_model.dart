@@ -47,7 +47,7 @@ class SubstationModel {
     }
   }
   // at backend for rmu and ltpanel keys we only need rmu id and lt panel id
-  Map toJson() => {
+  Map<String, dynamic> toJson() => {
         "properties": properties,
         "rmu": rmu.id == 'rmu_id' ? null : rmu.id,
         "transformers": trList.map((tr) => tr.id).toList(),

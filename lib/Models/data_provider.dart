@@ -1,5 +1,6 @@
 import 'package:btp_app_mac/Models/substation_model.dart';
 import 'package:btp_app_mac/Models/user_model.dart';
+import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -142,8 +143,12 @@ class DataProvider extends ChangeNotifier {
   }
 
   void removeLine(String id) async {
+    //todo:delete line from cache and mark for later deletion from backend
     // remove from backend
-    await deleteComponent(id, 'cable');
+    // await deleteComponent(id, 'cable');
+    await CacheService.putMap('delete cable', id, <String, dynamic>{});
+    // delete from cache
+    await CacheService.deleteMap('cable', id);
     //remove from frontend
     _polylines.remove(PolylineId(id));
     hideLineInfoWindow();
@@ -217,7 +222,7 @@ class DataProvider extends ChangeNotifier {
     return Marker(
         markerId: MarkerId(id),
         position: LatLng(currentLocation.latitude, currentLocation.longitude),
-        draggable: true,
+        draggable: user.role == 'admin',
         icon: BitmapDescriptor.fromBytes(customIcon),
         onDragStart: (coordinates) {
           if (kDebugMode) {
@@ -259,14 +264,18 @@ class DataProvider extends ChangeNotifier {
               });
         },
         onDragEnd: (coordinates) async {
-          //  todo:update location in backend
-
           if (!id.contains(' ')) {
             //not a dummy marker
-            SubstationModel sub = await getComponent(id, 'substation');
+            //todo:update substation in cache when icon is dragged
+            SubstationModel sub =
+                await CacheService.getFromCache('substation', id);
+            // SubstationModel sub = await getComponent(id, 'substation');
             sub.location =
                 LocationPoint(coordinates.latitude, coordinates.longitude);
-            sub = await updateComponent(sub, 'substation');
+
+            await CacheService.putMap('substation', id, sub.toJson());
+            // sub = await updateComponent(sub, 'substation');
+
             _markers.remove(MarkerId(id));
             addMarker(sub);
           }
@@ -301,8 +310,13 @@ class DataProvider extends ChangeNotifier {
   }
 
   void removeMarker(String id) async {
+    //todo:delete substation from cache and mark for later deletion from backend
     // remove from backend
-    await deleteComponent(id, 'substation');
+    // await deleteComponent(id, 'substation');
+    await CacheService.putMap('delete substation', id, <String, dynamic>{});
+    // delete from cache
+    await CacheService.deleteMap('substation', id);
+
     //remove from frontend
     _markers.remove(MarkerId(id));
     hideMarkerInfoWindow();

@@ -1,5 +1,5 @@
 import 'package:btp_app_mac/Models/data_provider.dart';
-import 'package:btp_app_mac/main.dart';
+import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -127,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         await Navigator.of(context).push(MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 const MyHomePage(title: 'Flutter App')));
+                        await CacheService.init();
                       } else {
                         showDialog(
                             context: context,

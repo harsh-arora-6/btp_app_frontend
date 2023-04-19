@@ -1,4 +1,5 @@
 import 'package:btp_app_mac/Models/data_provider.dart';
+import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:btp_app_mac/Utilities/transformer_api.dart';
 import 'package:btp_app_mac/widgets/image_gesture.dart';
 import 'package:btp_app_mac/widgets/component_form.dart';
@@ -31,12 +32,23 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   }
 
   void fetchData() async {
-    dynamic newRmu =
-        await getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu');
-    dynamic newLtpanel = await getSubstationChildBasedOnSubstationId(
-        widget.substationId, 'ltpanel');
-    List<dynamic> trList =
-        await getAllSubstationChild(widget.substationId, 'transformer');
+    //todo:fetching the rmu,transformer,ltpanel from cache from substation id
+    dynamic substation =
+        await CacheService.getFromCache('substation', widget.substationId);
+    dynamic newRmu = await CacheService.getFromCache('rmu', substation.rmu.id);
+    dynamic newLtpanel =
+        await CacheService.getFromCache('ltpanel', substation.lt_panel.id);
+    List<dynamic> trList = [];
+
+    for (SubstationChildModel tr in substation.trList) {
+      trList.add(await CacheService.getFromCache('transformer', tr.id));
+    }
+    // dynamic newRmu =
+    //     await getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu');
+    // dynamic newLtpanel = await getSubstationChildBasedOnSubstationId(
+    //     widget.substationId, 'ltpanel');
+    // List<dynamic> trList =
+    //     await getAllSubstationChild(widget.substationId, 'transformer');
     setState(() {
       rmu = newRmu;
       ltpanel = newLtpanel;
@@ -45,7 +57,15 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   }
 
   void removeTransformer(int index) async {
-    await deleteComponent(transformers[index].id as String, 'transformer');
+    //todo:delete transformer from cache
+    //key stored so that we know we need to delete this from backend
+    await CacheService.putMap('delete transformer',
+        transformers[index].id as String, <String, dynamic>{});
+    //delete from cache
+    await CacheService.deleteMap(
+        'transformer', transformers[index].id as String);
+
+    // await deleteComponent(transformers[index].id as String, 'transformer');
     setState(() {
       transformers.removeAt(index);
     });

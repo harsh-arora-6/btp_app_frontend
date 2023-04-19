@@ -15,5 +15,6 @@ class SubstationChildModel {
         json['substation'] as String);
   }
 
-  Map toJson() => {"properties": properties, "substation": parentSubstationId};
+  Map<String, dynamic> toJson() =>
+      {"properties": properties, "substation": parentSubstationId};
 }

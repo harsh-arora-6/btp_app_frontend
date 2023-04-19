@@ -1,3 +1,4 @@
+import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Models/data_provider.dart';
@@ -34,7 +35,10 @@ class _ComponentFormState extends State<ComponentForm> {
 
   Future<void> fetchData() async {
     try {
-      widget.model = await getComponent(widget.model.id, widget.childName);
+      //todo:get form data from cache.
+      widget.model =
+          await CacheService.getFromCache(widget.childName, widget.model.id);
+      // widget.model = await getComponent(widget.model.id, widget.childName);
     } catch (onError) {
       throw Exception(onError);
     }
@@ -96,8 +100,12 @@ class _ComponentFormState extends State<ComponentForm> {
     try {
       // String id = widget.model.id;
       widget.model.properties = getProps();
+      //update component data in cache
+      await CacheService.putMap(
+          widget.childName, widget.model.id, widget.model.toJson());
       // String parentSubstationId = widget.model.parentSubstationId;
-      widget.model = await updateComponent(widget.model, widget.childName);
+      // update in backend
+      // widget.model = await updateComponent(widget.model, widget.childName);
       // var newModel = await getComponent(id, widget.childName);
       //  newModel;
       getFields();

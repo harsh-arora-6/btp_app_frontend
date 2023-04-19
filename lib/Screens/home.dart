@@ -1,3 +1,4 @@
+import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,12 +43,16 @@ class _MyHomePageState extends State<MyHomePage> {
       Provider.of<DataProvider>(context, listen: false).addPolyLine(
         cableModel,
       );
+      await CacheService.putMap('cable', cableModel.id, cableModel.toJson());
     }
     for (dynamic substationModel in substationList) {
       // print(cableModel.properties);
       Provider.of<DataProvider>(context, listen: false)
           .addMarker(substationModel);
+      await CacheService.putMap(
+          'substation', substationModel.id, substationModel.toJson());
     }
+    //TODO:set cables and substations in cache
   }
 
   @override
@@ -77,6 +82,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       backgroundColor:
                           MaterialStatePropertyAll(Colors.blueGrey)),
                   child: const Text("Logout"),
+                ),
+              ),
+              //Save button to save current changes.
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FilledButton(
+                  onPressed: () async {
+                    data.hideLineInfoWindow();
+                    data.hideMarkerInfoWindow();
+                    data.makeAllLineRed();
+                    await CacheService.updateAllEntriesInDB();
+                  },
+                  style: const ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.blueGrey)),
+                  child: const Text("Save"),
                 ),
               )
             ],
