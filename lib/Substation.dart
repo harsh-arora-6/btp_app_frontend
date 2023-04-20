@@ -36,9 +36,11 @@ class _SubstationWidgetState extends State<SubstationWidget> {
     //todo:fetching the rmu,transformer,ltpanel from cache from substation id
     dynamic substation =
         await CacheService.getFromCache('substation', widget.substationId);
+    // print('fetch data in substation.dart');
+    // print(substation.toJson());
     dynamic newRmu = await CacheService.getFromCache('rmu', substation.rmu.id);
     dynamic newLtpanel =
-        await CacheService.getFromCache('ltpanel', substation.lt_panel.id);
+        await CacheService.getFromCache('ltpanel', substation.ltpanel.id);
     List<dynamic> trList = [];
 
     for (SubstationChildModel tr in substation.trList) {

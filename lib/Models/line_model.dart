@@ -19,6 +19,7 @@ class CableModel {
         json['properties'] ?? <String, dynamic>{}, listPoints);
   }
   Map toJson() => {
+        "id": id,
         "properties": properties,
         "point_locations":
             List<dynamic>.from(locationPoints.map((e) => e.toJson()).toList()),

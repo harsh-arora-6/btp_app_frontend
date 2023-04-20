@@ -12,5 +12,7 @@ dynamic extractData(dynamic data, String type) {
   } else {
     extractedData = SubstationChildModel.fromJson(data);
   }
+  // print('extracted data');
+  // print(extractedData);
   return extractedData;
 }

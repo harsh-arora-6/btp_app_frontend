@@ -8,13 +8,14 @@ class SubstationChildModel {
   SubstationChildModel(this.id, this.properties, this.parentSubstationId);
   factory SubstationChildModel.fromJson(Map<String, dynamic> json) {
     // print('substation child fromJson');
-    // print(json['substation'].runtimeType);
+    // print(json);
+    String newId = json['_id'] ?? json['id'];
     return SubstationChildModel(
-        json['_id'] as String,
+        newId,
         json['properties'] ?? <String, dynamic>{},
         json['substation'] as String);
   }
 
   Map<String, dynamic> toJson() =>
-      {"properties": properties, "substation": parentSubstationId};
+      {"id": id, "properties": properties, "substation": parentSubstationId};
 }

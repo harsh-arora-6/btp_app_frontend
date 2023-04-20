@@ -8,6 +8,8 @@ class CacheService {
   static Future<Map<String, dynamic>?> getMap(String type, String key) async {
     final box = await Hive.openBox<String>(type);
     final cachedData = box.get(key);
+    print('get Map $type');
+    print(cachedData);
     if (cachedData != null) {
       final mapFromCache = json.decode(cachedData);
       return mapFromCache;
@@ -25,13 +27,19 @@ class CacheService {
   }
 
   static Future<dynamic> getFromCache(String type, String id) async {
-    final mapFromCache = await getMap(type, id);
+    // dynamic mapFromCache;
+    dynamic mapFromCache = await CacheService.getMap(type, id);
     if (mapFromCache == null) {
+      // print('getFromCache');
+      // print(type);
+      // print(id);
       dynamic data = await getComponent(id, type);
-      await CacheService.putMap(type, id, data);
+      await CacheService.putMap(type, id, data.toJson());
       return data;
     }
     mapFromCache['_id'] = id;
+    // print('getFromCache');
+    // print(mapFromCache);
     return extractData(mapFromCache, type);
   }
 
@@ -60,10 +68,14 @@ class CacheService {
     }
   }
 
+  static Future<void> clearHiveCache() async {
+    await Hive.deleteFromDisk();
+  }
+
   static Future<void> updateAllEntriesInDB() async {
     await CacheService.updateBoxEntriesInDB('cable');
     await CacheService.updateBoxEntriesInDB('rmu');
-    //tranCacheService.sformer has to be deleted before substation due to backend implementation
+    //transformer has to be deleted before substation due to backend implementation
     await CacheService.updateBoxEntriesInDB('transformer');
     await CacheService.updateBoxEntriesInDB('ltpanel');
     await CacheService.updateBoxEntriesInDB('substation');

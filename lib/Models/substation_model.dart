@@ -21,8 +21,8 @@ class SubstationModel {
 
   factory SubstationModel.fromJson(Map<String, dynamic> json) {
     try {
-      // print('substation.fromJson');
-      // print(json['transformers'].runtimeType);
+      // print('from json');
+      // print(json['location']);
       List<SubstationChildModel> transformers = List<SubstationChildModel>.from(
           json['transformers']
               .map((p) => SubstationChildModel.fromJson(p))
@@ -48,10 +48,11 @@ class SubstationModel {
   }
   // at backend for rmu and ltpanel keys we only need rmu id and lt panel id
   Map<String, dynamic> toJson() => {
+        "id": id,
         "properties": properties,
-        "rmu": rmu.id == 'rmu_id' ? null : rmu.id,
-        "transformers": trList.map((tr) => tr.id).toList(),
-        "ltpanel": ltpanel.id == 'ltpanel_id' ? null : ltpanel.id,
+        "rmu": rmu.id == 'rmu_id' ? null : rmu.toJson(),
+        "transformers": trList.map((tr) => tr.toJson()).toList(),
+        "ltpanel": ltpanel.id == 'ltpanel_id' ? null : ltpanel.toJson(),
         "location": location.toJson()
       };
 }

@@ -10,13 +10,11 @@ Future<dynamic> createSubstation(dynamic substation) async {
         await createComponent(substation, 'substation');
     //create rmu
     SubstationChildModel rmu = await createComponent(
-        SubstationChildModel(
-            'id', <String, dynamic>{}, newSubstation.id as String),
+        SubstationChildModel('id', <String, dynamic>{}, newSubstation.id),
         'rmu');
     //create ltpanel
     SubstationChildModel ltpanel = await createComponent(
-        SubstationChildModel(
-            'id', <String, dynamic>{}, newSubstation.id as String),
+        SubstationChildModel('id', <String, dynamic>{}, newSubstation.id),
         'ltpanel');
 
     newSubstation.rmu = rmu;

@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // print(cableModel.properties);
       Provider.of<DataProvider>(context, listen: false)
           .addMarker(substationModel);
+
       await CacheService.putMap(
           'substation', substationModel.id, substationModel.toJson());
       await CacheService.putMap(
@@ -140,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.pop(context);
                                   //removing home screen
                                   Navigator.pop(context);
+                                  await CacheService.clearHiveCache();
                                   await logout();
                                 },
                                 child: const Text("Logout"),
@@ -183,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () async {
                                   Navigator.of(context).pop();
                                   Navigator.pop(context);
+                                  await CacheService.clearHiveCache();
                                   await logout();
                                 },
                                 child: const Text("Don't Save"),
@@ -206,6 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   //removing home screen
                                   Navigator.pop(context);
                                   await CacheService.updateAllEntriesInDB();
+                                  await CacheService.clearHiveCache();
                                   await logout();
                                 },
                                 child: const Text("Save & Logout"),
