@@ -127,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         await Navigator.of(context).push(MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 const MyHomePage(title: 'Flutter App')));
-                        await CacheService.init();
+                        // await CacheService.init();
                       } else {
                         showDialog(
                             context: context,

@@ -1,4 +1,5 @@
 import 'package:btp_app_mac/Models/data_provider.dart';
+import 'package:btp_app_mac/Models/substation_model.dart';
 import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:btp_app_mac/Utilities/transformer_api.dart';
 import 'package:btp_app_mac/widgets/image_gesture.dart';
@@ -59,12 +60,16 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   void removeTransformer(int index) async {
     //todo:delete transformer from cache
     //key stored so that we know we need to delete this from backend
-    await CacheService.putMap('delete transformer',
-        transformers[index].id as String, <String, dynamic>{});
+    await CacheService.putMap('transformer',
+        'delete ${transformers[index].id as String}', <String, dynamic>{});
     //delete from cache
     await CacheService.deleteMap(
         'transformer', transformers[index].id as String);
-
+    SubstationModel sub =
+        await CacheService.getFromCache('substation', widget.substationId);
+    sub.trList.remove(transformers[index]);
+    //update substation in cache.
+    await CacheService.putMap('substation', widget.substationId, sub.toJson());
     // await deleteComponent(transformers[index].id as String, 'transformer');
     setState(() {
       transformers.removeAt(index);

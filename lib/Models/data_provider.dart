@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../Substation.dart';
-import '../Utilities/api_calls.dart';
 import '../Utilities/icon_from_image.dart';
 import '../Utilities/location.dart';
 import '../Utilities/substation_api.dart';
@@ -146,7 +145,7 @@ class DataProvider extends ChangeNotifier {
     //todo:delete line from cache and mark for later deletion from backend
     // remove from backend
     // await deleteComponent(id, 'cable');
-    await CacheService.putMap('delete cable', id, <String, dynamic>{});
+    await CacheService.putMap('cable', 'delete $id', <String, dynamic>{});
     // delete from cache
     await CacheService.deleteMap('cable', id);
     //remove from frontend
@@ -313,13 +312,14 @@ class DataProvider extends ChangeNotifier {
     //todo:delete substation from cache and mark for later deletion from backend
     // remove from backend
     // await deleteComponent(id, 'substation');
-    await CacheService.putMap('delete substation', id, <String, dynamic>{});
+    await CacheService.putMap('substation', 'delete $id', <String, dynamic>{});
     // delete from cache
     await CacheService.deleteMap('substation', id);
 
     //remove from frontend
     _markers.remove(MarkerId(id));
     hideMarkerInfoWindow();
+    hideLineInfoWindow();
     notifyListeners();
   }
 

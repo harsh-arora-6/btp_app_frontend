@@ -1,3 +1,4 @@
+import 'package:btp_app_mac/Models/substation_child_model.dart';
 import 'package:btp_app_mac/Utilities/cache.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/foundation.dart';
@@ -51,6 +52,13 @@ class _MyHomePageState extends State<MyHomePage> {
           .addMarker(substationModel);
       await CacheService.putMap(
           'substation', substationModel.id, substationModel.toJson());
+      await CacheService.putMap(
+          'rmu', substationModel.rmu.id, substationModel.rmu.toJson());
+      await CacheService.putMap('ltpanel', substationModel.ltpanel.id,
+          substationModel.ltpanel.toJson());
+      for (SubstationChildModel tr in substationModel.trList) {
+        await CacheService.putMap('transformer', tr.id, tr.toJson());
+      }
     }
     //TODO:set cables and substations in cache
   }
@@ -64,6 +72,24 @@ class _MyHomePageState extends State<MyHomePage> {
             //user name
             title: Text(data.user.name),
             actions: [
+              data.user.role == 'admin'
+                  ? //Save button to save current changes.
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FilledButton(
+                        onPressed: () async {
+                          data.hideLineInfoWindow();
+                          data.hideMarkerInfoWindow();
+                          data.makeAllLineRed();
+                          await CacheService.updateAllEntriesInDB();
+                        },
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.blueGrey)),
+                        child: const Text("Save"),
+                      ),
+                    )
+                  : Container(),
               //logout button
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -72,32 +98,128 @@ class _MyHomePageState extends State<MyHomePage> {
                     data.hideLineInfoWindow();
                     data.hideMarkerInfoWindow();
                     data.makeAllLineRed();
-                    setState(() {
-                      isLoggingOut = true;
-                    });
-                    Navigator.pop(context);
-                    await logout();
+                    if (data.user.role != 'admin') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title:
+                                const Text("Are you sure you want to logout?"),
+                            content: const Text("Logout?"),
+                            actions: <Widget>[
+                              //cancel button
+                              TextButton(
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.blue),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white)),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel"),
+                              ),
+
+                              //save btn
+                              TextButton(
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.green),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white)),
+                                onPressed: () async {
+                                  //TODO: perform delete operation here
+                                  setState(() {
+                                    isLoggingOut = true;
+                                  });
+                                  //removing pop up
+                                  Navigator.pop(context);
+                                  //removing home screen
+                                  Navigator.pop(context);
+                                  await logout();
+                                },
+                                child: const Text("Logout"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text(
+                                "Do you want to save the current info?"),
+                            content: const Text("Logout?"),
+                            actions: <Widget>[
+                              //cancel button
+                              TextButton(
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.blue),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white)),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel"),
+                              ),
+                              //don't save btn
+                              TextButton(
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.red),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white)),
+                                onPressed: () async {
+                                  Navigator.of(context).pop();
+                                  Navigator.pop(context);
+                                  await logout();
+                                },
+                                child: const Text("Don't Save"),
+                              ),
+                              //save btn
+                              TextButton(
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.green),
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white)),
+                                onPressed: () async {
+                                  //TODO: perform delete operation here
+                                  setState(() {
+                                    isLoggingOut = true;
+                                  });
+                                  //removing pop up
+                                  Navigator.pop(context);
+                                  //removing home screen
+                                  Navigator.pop(context);
+                                  await CacheService.updateAllEntriesInDB();
+                                  await logout();
+                                },
+                                child: const Text("Save & Logout"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   },
                   style: const ButtonStyle(
                       backgroundColor:
                           MaterialStatePropertyAll(Colors.blueGrey)),
                   child: const Text("Logout"),
-                ),
-              ),
-              //Save button to save current changes.
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FilledButton(
-                  onPressed: () async {
-                    data.hideLineInfoWindow();
-                    data.hideMarkerInfoWindow();
-                    data.makeAllLineRed();
-                    await CacheService.updateAllEntriesInDB();
-                  },
-                  style: const ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll(Colors.blueGrey)),
-                  child: const Text("Save"),
                 ),
               )
             ],
