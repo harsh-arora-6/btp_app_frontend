@@ -22,12 +22,21 @@ Future<dynamic> createSubstation(dynamic substation) async {
     newSubstation.trList = [];
     // dynamic updatedNewSubstation =
     //     await updateComponent(newSubstation, 'substation');
-
+    final cacheService = CacheService();
+    await cacheService.init();
+    await cacheService.openBox('substation');
     //set up in cache
-    await CacheService.putMap(
+    await cacheService.putMap(
         'substation', newSubstation.id, newSubstation.toJson());
-    await CacheService.putMap('rmu', rmu.id, rmu.toJson());
-    await CacheService.putMap('ltpanel', ltpanel.id, ltpanel.toJson());
+    await cacheService.closeBox('substation');
+
+    await cacheService.openBox('rmu');
+    await cacheService.putMap('rmu', rmu.id, rmu.toJson());
+    await cacheService.closeBox('rmu');
+
+    await cacheService.openBox('ltpanel');
+    await cacheService.putMap('ltpanel', ltpanel.id, ltpanel.toJson());
+    await cacheService.closeBox('ltpanel');
     //return updatedNewSubstation
     return newSubstation;
   } catch (error) {

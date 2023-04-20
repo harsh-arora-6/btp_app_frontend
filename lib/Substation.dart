@@ -34,18 +34,31 @@ class _SubstationWidgetState extends State<SubstationWidget> {
 
   void fetchData() async {
     //todo:fetching the rmu,transformer,ltpanel from cache from substation id
+    final cacheService = CacheService();
+    await cacheService.init();
+
+    await cacheService.openBox('substation');
     dynamic substation =
-        await CacheService.getFromCache('substation', widget.substationId);
+        await cacheService.getFromCache('substation', widget.substationId);
+    await cacheService.closeBox('substation');
     // print('fetch data in substation.dart');
     // print(substation.toJson());
-    dynamic newRmu = await CacheService.getFromCache('rmu', substation.rmu.id);
+
+    await cacheService.openBox('rmu');
+    dynamic newRmu = await cacheService.getFromCache('rmu', substation.rmu.id);
+    await cacheService.closeBox('rmu');
+
+    await cacheService.openBox('ltpanel');
     dynamic newLtpanel =
-        await CacheService.getFromCache('ltpanel', substation.ltpanel.id);
+        await cacheService.getFromCache('ltpanel', substation.ltpanel.id);
+    await cacheService.closeBox('ltpanel');
     List<dynamic> trList = [];
 
+    await cacheService.openBox('transformer');
     for (SubstationChildModel tr in substation.trList) {
-      trList.add(await CacheService.getFromCache('transformer', tr.id));
+      trList.add(await cacheService.getFromCache('transformer', tr.id));
     }
+    await cacheService.closeBox('transformer');
     // dynamic newRmu =
     //     await getSubstationChildBasedOnSubstationId(widget.substationId, 'rmu');
     // dynamic newLtpanel = await getSubstationChildBasedOnSubstationId(
@@ -62,16 +75,25 @@ class _SubstationWidgetState extends State<SubstationWidget> {
   void removeTransformer(int index) async {
     //todo:delete transformer from cache
     //key stored so that we know we need to delete this from backend
-    await CacheService.putMap('transformer',
+    final cacheService = CacheService();
+    await cacheService.init();
+
+    await cacheService.openBox('transformer');
+    await cacheService.putMap('transformer',
         'delete ${transformers[index].id as String}', <String, dynamic>{});
     //delete from cache
-    await CacheService.deleteMap(
+    await cacheService.deleteMap(
         'transformer', transformers[index].id as String);
+    await cacheService.closeBox('transformer');
+
+    await cacheService.openBox('substation');
     SubstationModel sub =
-        await CacheService.getFromCache('substation', widget.substationId);
+        await cacheService.getFromCache('substation', widget.substationId);
     sub.trList.remove(transformers[index]);
     //update substation in cache.
-    await CacheService.putMap('substation', widget.substationId, sub.toJson());
+    await cacheService.putMap('substation', widget.substationId, sub.toJson());
+
+    await cacheService.closeBox('substation');
     // await deleteComponent(transformers[index].id as String, 'transformer');
     setState(() {
       transformers.removeAt(index);

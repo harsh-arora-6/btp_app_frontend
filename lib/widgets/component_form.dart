@@ -36,8 +36,12 @@ class _ComponentFormState extends State<ComponentForm> {
   Future<void> fetchData() async {
     try {
       //todo:get form data from cache.
+      final cacheService = CacheService();
+      await cacheService.init();
+      await cacheService.openBox(widget.childName);
       widget.model =
-          await CacheService.getFromCache(widget.childName, widget.model.id);
+          await cacheService.getFromCache(widget.childName, widget.model.id);
+      await cacheService.closeBox(widget.childName);
       // widget.model = await getComponent(widget.model.id, widget.childName);
     } catch (onError) {
       throw Exception(onError);
@@ -101,8 +105,12 @@ class _ComponentFormState extends State<ComponentForm> {
       // String id = widget.model.id;
       widget.model.properties = getProps();
       //update component data in cache
-      await CacheService.putMap(
+      final cacheService = CacheService();
+      await cacheService.init();
+      await cacheService.openBox(widget.childName);
+      await cacheService.putMap(
           widget.childName, widget.model.id, widget.model.toJson());
+      await cacheService.closeBox(widget.childName);
       // String parentSubstationId = widget.model.parentSubstationId;
       // update in backend
       // widget.model = await updateComponent(widget.model, widget.childName);

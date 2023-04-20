@@ -6,6 +6,9 @@ import 'api_calls.dart';
 Future<SubstationChildModel> createTransformer(
     SubstationChildModel substationChild) async {
   try {
+    final cacheService = CacheService();
+    await cacheService.init();
+    await cacheService.openBox('substation');
     SubstationChildModel newSubstationChild =
         await createComponent(substationChild, 'transformer');
     //get substation data from backend
@@ -13,7 +16,7 @@ Future<SubstationChildModel> createTransformer(
     //     await getComponent(substationChild.parentSubstationId, 'substation');
 
     //get substation data from cache if its available in cache , else from backend
-    SubstationModel substation = (await CacheService.getFromCache(
+    SubstationModel substation = (await cacheService.getFromCache(
         'substation', substationChild.parentSubstationId)) as SubstationModel;
 
     // add transformer to parent substation.
@@ -21,12 +24,14 @@ Future<SubstationChildModel> createTransformer(
 
     //update substation at backend
     // await updateComponent(substation, 'substation');
-
+    await cacheService.openBox('transformer');
     //set up new transformer in cache.
-    await CacheService.putMap(
+    await cacheService.putMap(
         'transformer', newSubstationChild.id, newSubstationChild.toJson());
+    await cacheService.closeBox('transformer');
     //update substation cache
-    await CacheService.putMap('substation', substation.id, substation.toJson());
+    await cacheService.putMap('substation', substation.id, substation.toJson());
+    await cacheService.closeBox('substation');
     return newSubstationChild;
   } catch (error) {
     throw Exception(error);

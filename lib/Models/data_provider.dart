@@ -145,9 +145,14 @@ class DataProvider extends ChangeNotifier {
     //todo:delete line from cache and mark for later deletion from backend
     // remove from backend
     // await deleteComponent(id, 'cable');
-    await CacheService.putMap('cable', 'delete $id', <String, dynamic>{});
+    final cacheService = CacheService();
+    await cacheService.init();
+
+    await cacheService.openBox('cable');
+    await cacheService.putMap('cable', 'delete $id', <String, dynamic>{});
     // delete from cache
-    await CacheService.deleteMap('cable', id);
+    await cacheService.deleteMap('cable', id);
+    await cacheService.closeBox('cable');
     //remove from frontend
     _polylines.remove(PolylineId(id));
     hideLineInfoWindow();
@@ -266,13 +271,18 @@ class DataProvider extends ChangeNotifier {
           if (!id.contains(' ')) {
             //not a dummy marker
             //todo:update substation in cache when icon is dragged
+            final cacheService = CacheService();
+            await cacheService.init();
+
+            await cacheService.openBox('substation');
             SubstationModel sub =
-                await CacheService.getFromCache('substation', id);
+                await cacheService.getFromCache('substation', id);
             // SubstationModel sub = await getComponent(id, 'substation');
             sub.location =
                 LocationPoint(coordinates.latitude, coordinates.longitude);
 
-            await CacheService.putMap('substation', id, sub.toJson());
+            await cacheService.putMap('substation', id, sub.toJson());
+            await cacheService.closeBox('substation');
             // sub = await updateComponent(sub, 'substation');
 
             _markers.remove(MarkerId(id));
@@ -312,9 +322,14 @@ class DataProvider extends ChangeNotifier {
     //todo:delete substation from cache and mark for later deletion from backend
     // remove from backend
     // await deleteComponent(id, 'substation');
-    await CacheService.putMap('substation', 'delete $id', <String, dynamic>{});
+    final cacheService = CacheService();
+    await cacheService.init();
+
+    await cacheService.openBox('substation');
+    await cacheService.putMap('substation', 'delete $id', <String, dynamic>{});
     // delete from cache
-    await CacheService.deleteMap('substation', id);
+    await cacheService.deleteMap('substation', id);
+    await cacheService.closeBox('substation');
 
     //remove from frontend
     _markers.remove(MarkerId(id));

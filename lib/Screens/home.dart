@@ -39,28 +39,40 @@ class _MyHomePageState extends State<MyHomePage> {
     List<dynamic> cableList = await getAllComponent('cable');
     List<dynamic> substationList = await getAllComponent('substation');
 
+    final cacheService = CacheService();
+    await cacheService.init();
+    await cacheService.openBox('substation');
+    await cacheService.openBox('cable');
+    await cacheService.openBox('rmu');
+    await cacheService.openBox('transformer');
+    await cacheService.openBox('ltpanel');
     for (dynamic cableModel in cableList) {
       // print(cableModel.properties);
       Provider.of<DataProvider>(context, listen: false).addPolyLine(
         cableModel,
       );
-      await CacheService.putMap('cable', cableModel.id, cableModel.toJson());
+      await cacheService.putMap('cable', cableModel.id, cableModel.toJson());
     }
     for (dynamic substationModel in substationList) {
       // print(cableModel.properties);
       Provider.of<DataProvider>(context, listen: false)
           .addMarker(substationModel);
 
-      await CacheService.putMap(
+      await cacheService.putMap(
           'substation', substationModel.id, substationModel.toJson());
-      await CacheService.putMap(
+      await cacheService.putMap(
           'rmu', substationModel.rmu.id, substationModel.rmu.toJson());
-      await CacheService.putMap('ltpanel', substationModel.ltpanel.id,
+      await cacheService.putMap('ltpanel', substationModel.ltpanel.id,
           substationModel.ltpanel.toJson());
       for (SubstationChildModel tr in substationModel.trList) {
-        await CacheService.putMap('transformer', tr.id, tr.toJson());
+        await cacheService.putMap('transformer', tr.id, tr.toJson());
       }
     }
+    await cacheService.closeBox('substation');
+    await cacheService.closeBox('cable');
+    await cacheService.closeBox('rmu');
+    await cacheService.closeBox('transformer');
+    await cacheService.closeBox('ltpanel');
     //TODO:set cables and substations in cache
   }
 
@@ -82,7 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           data.hideLineInfoWindow();
                           data.hideMarkerInfoWindow();
                           data.makeAllLineRed();
-                          await CacheService.updateAllEntriesInDB();
+                          final cacheService = CacheService();
+                          await cacheService.init();
+                          await cacheService.updateAllEntriesInDB();
                         },
                         style: const ButtonStyle(
                             backgroundColor:
@@ -141,7 +155,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.pop(context);
                                   //removing home screen
                                   Navigator.pop(context);
-                                  await CacheService.clearHiveCache();
+                                  final cacheService = CacheService();
+                                  await cacheService.init();
+                                  await cacheService.updateAllEntriesInDB();
+                                  // await cacheService.clearHiveCache();
                                   await logout();
                                 },
                                 child: const Text("Logout"),
@@ -185,7 +202,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () async {
                                   Navigator.of(context).pop();
                                   Navigator.pop(context);
-                                  await CacheService.clearHiveCache();
+                                  final cacheService = CacheService();
+                                  await cacheService.init();
+                                  // await cacheService.updateAllEntriesInDB();
+                                  await cacheService.clearHiveCache();
                                   await logout();
                                 },
                                 child: const Text("Don't Save"),
@@ -208,8 +228,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.pop(context);
                                   //removing home screen
                                   Navigator.pop(context);
-                                  await CacheService.updateAllEntriesInDB();
-                                  await CacheService.clearHiveCache();
+                                  final cacheService = CacheService();
+                                  await cacheService.init();
+                                  await cacheService.updateAllEntriesInDB();
+                                  await cacheService.clearHiveCache();
                                   await logout();
                                 },
                                 child: const Text("Save & Logout"),
