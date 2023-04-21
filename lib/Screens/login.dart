@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import '../Models/user_model.dart';
 import '../Utilities/user_api.dart';
+import 'forget_screen.dart';
 import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const SignupScreen(),
+                    builder: (_) => const ForgetScreen(),
                   ),
                 );
               },

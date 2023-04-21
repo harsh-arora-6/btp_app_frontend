@@ -1,23 +1,23 @@
+import 'package:btp_app_mac/Screens/reset_screen.dart';
+import 'package:btp_app_mac/Utilities/user_api.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../Models/data_provider.dart';
-
-class Forget extends StatefulWidget {
-  const Forget({super.key});
+class ForgetScreen extends StatefulWidget {
+  const ForgetScreen({super.key});
 
   @override
-  State<Forget> createState() => _ForgetState();
+  State<ForgetScreen> createState() => _ForgetScreenState();
 }
 
-class _ForgetState extends State<Forget> {
+class _ForgetScreenState extends State<ForgetScreen> {
   TextEditingController emailController = TextEditingController();
+  bool isSubmitting = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Forget Password Page"),
+        title: const Text("ForgetScreen Password Page"),
       ),
       body: SingleChildScrollView(
         child: Column(children: <Widget>[
@@ -67,25 +67,74 @@ class _ForgetState extends State<Forget> {
               },
             ),
           ),
-
-          //Forget password button
+          const SizedBox(
+            height: 10,
+          ),
+          //ForgetScreen password button
           Container(
             height: 50,
             width: 250,
             decoration: BoxDecoration(
                 color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-            child: Consumer<DataProvider>(
-              builder: (context, data, child) {
-                return TextButton(
-                  onPressed: () {
-                    //TODO FORGOT PASSWORD SCREEN GOES HERE
-                  },
-                  child: const Text(
-                    'Forgot Password',
-                    style: TextStyle(color: Colors.blue, fontSize: 15),
-                  ),
-                );
-              },
+            child: TextButton(
+              onPressed: isSubmitting == false
+                  ? () async {
+                      setState(() {
+                        isSubmitting = true;
+                      });
+                      String message =
+                          await forgetPassword(emailController.text);
+
+                      if (message == 'OTP sent to the specified mail') {
+                        print('hello');
+                        setState(() {
+                          isSubmitting = false;
+                          emailController.text = "";
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(message),
+                          ),
+                        );
+                        Navigator.pop(context);
+                        await Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const ResetScreen()));
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(message),
+                                actions: <Widget>[
+                                  TextButton(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.red),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Okay"),
+                                  ),
+                                ],
+                              );
+                            });
+                        setState(() {
+                          isSubmitting = false;
+                        });
+                      }
+                    }
+                  : null,
+              child: isSubmitting
+                  ? const CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    )
+                  : const Text(
+                      'Submit',
+                      style: TextStyle(color: Colors.white, fontSize: 25),
+                    ),
             ),
           ),
         ]),

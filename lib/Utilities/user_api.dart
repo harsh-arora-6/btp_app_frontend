@@ -70,3 +70,50 @@ Future<String> signup(
     throw Exception(error);
   }
 }
+
+Future<String> forgetPassword(String email) async {
+  try {
+    Map<String, dynamic> body = {"email": email};
+    http.Response response = await http.post(
+        Uri.parse('$baseUrl/user/forgetpassword'),
+        body: jsonEncode(body),
+        headers: {'Content-Type': 'application/json'});
+
+    var resp = jsonDecode(response.body);
+
+    if (resp['message'] == 'OTP sent to the specified mail' ||
+        resp['message'] == 'please sign up') {
+      return resp['message'];
+    } else {
+      throw Exception(resp['message']);
+    }
+  } catch (error) {
+    throw Exception(error);
+  }
+}
+
+Future<String> resetPassword(
+    String otp, String password, String confirmPassword) async {
+  try {
+    Map<String, dynamic> body = {
+      "token": otp,
+      "password": password,
+      "confirmPassword": confirmPassword
+    };
+    http.Response response = await http.post(
+        Uri.parse('$baseUrl/user/resetpassword'),
+        body: jsonEncode(body),
+        headers: {'Content-Type': 'application/json'});
+
+    var resp = jsonDecode(response.body);
+
+    if (resp['message'] == 'Password Changed Successfully' ||
+        resp['message'] == 'OTP Incorrect') {
+      return resp['message'];
+    } else {
+      throw Exception(resp['message']);
+    }
+  } catch (error) {
+    throw Exception(error);
+  }
+}
