@@ -42,6 +42,12 @@ class DataProvider extends ChangeNotifier {
           'ltpanel_id', <String, dynamic>{}, 'parentSubstationId'),
       LocationPoint(0.0, 0.0));
   LatLng currentClickedLocation = LatLng(0, 0);
+  void makeDefaultScreen() {
+    hideLineInfoWindow();
+    hideMarkerInfoWindow();
+    makeAllLineRed();
+    notifyListeners();
+  }
 
   void hideLineInfoWindow() {
     customInfoWindowLineController.hideInfoWindow!();
@@ -71,6 +77,30 @@ class DataProvider extends ChangeNotifier {
     customInfoWindowMarkerController.googleMapController = cont;
     customInfoWindowLineController.googleMapController = cont;
     notifyListeners();
+  }
+
+  void removeLine(String id) async {
+    // remove from backend
+    await deleteComponent(id, 'cable');
+    //remove from frontend
+    _polylines.remove(PolylineId(id));
+    hideLineInfoWindow();
+    notifyListeners();
+  }
+
+  void updatePolylineColor(String id, {String color = 'red'}) {
+    PolylineId polylineId = PolylineId(id);
+    Polyline newPolyLine = _polylines[polylineId]!
+        .copyWith(colorParam: color == 'red' ? Colors.red : Colors.blue);
+    _polylines[polylineId] = newPolyLine;
+  }
+
+  void makeAllLineRed() {
+    for (PolylineId polylineId in _polylines.keys) {
+      Polyline newPolyLine =
+          _polylines[polylineId]!.copyWith(colorParam: Colors.red);
+      _polylines[polylineId] = newPolyLine;
+    }
   }
 
   void addPolyLinePoint() async {
@@ -133,36 +163,12 @@ class DataProvider extends ChangeNotifier {
               .toList(),
         ),
         onTap: () {
-          hideMarkerInfoWindow();
+          makeDefaultScreen();
           handlePolylineClick(cable);
         });
 
     isPolyLineContinue = false;
     notifyListeners();
-  }
-
-  void removeLine(String id) async {
-    // remove from backend
-    await deleteComponent(id, 'cable');
-    //remove from frontend
-    _polylines.remove(PolylineId(id));
-    hideLineInfoWindow();
-    notifyListeners();
-  }
-
-  void updatePolylineColor(String id, {String color = 'red'}) {
-    PolylineId polylineId = PolylineId(id);
-    Polyline newPolyLine = _polylines[polylineId]!
-        .copyWith(colorParam: color == 'red' ? Colors.red : Colors.blue);
-    _polylines[polylineId] = newPolyLine;
-  }
-
-  void makeAllLineRed() {
-    for (PolylineId polylineId in _polylines.keys) {
-      Polyline newPolyLine =
-          _polylines[polylineId]!.copyWith(colorParam: Colors.red);
-      _polylines[polylineId] = newPolyLine;
-    }
   }
 
   void handlePolylineClick(dynamic cable) async {
@@ -272,8 +278,7 @@ class DataProvider extends ChangeNotifier {
           }
         },
         onTap: () {
-          hideLineInfoWindow();
-          makeAllLineRed();
+          makeDefaultScreen();
           customInfoWindowMarkerController.addInfoWindow!(
             Column(
               mainAxisAlignment: MainAxisAlignment.center,

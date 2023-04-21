@@ -64,9 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(8.0),
                 child: FilledButton(
                   onPressed: () async {
-                    data.hideLineInfoWindow();
-                    data.hideMarkerInfoWindow();
-                    data.makeAllLineRed();
+                    data.makeDefaultScreen();
                     setState(() {
                       isLoggingOut = true;
                     });
