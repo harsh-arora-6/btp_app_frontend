@@ -44,3 +44,29 @@ Future<void> logout() async {
     throw Exception(error);
   }
 }
+
+Future<String> signup(
+    String name, String email, String password, String confirmPassword) async {
+  try {
+    Map<String, dynamic> body = {
+      "name": name,
+      "email": email,
+      "password": password,
+      "confirmPassword": confirmPassword
+    };
+    http.Response response = await http.post(Uri.parse('$baseUrl/user/signup'),
+        body: jsonEncode(body), headers: {'Content-Type': 'application/json'});
+
+    var resp = jsonDecode(response.body);
+
+    if (resp['message'] == 'User Signed up' ||
+        resp['message'] == 'User Already Exists' ||
+        resp['message'] == 'Invalid Credentials') {
+      return resp['message'];
+    } else {
+      throw Exception(resp['message']);
+    }
+  } catch (error) {
+    throw Exception(error);
+  }
+}

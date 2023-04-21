@@ -1,4 +1,5 @@
 import 'package:btp_app_mac/Models/data_provider.dart';
+import 'package:btp_app_mac/Screens/signup_screen.dart';
 import 'package:btp_app_mac/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -88,15 +89,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   onChanged: (text) {}),
             ),
             //Forget password button
-            // TextButton(
-            //   onPressed: () {
-            //     //TODO FORGOT PASSWORD SCREEN GOES HERE
-            //   },
-            //   child: const Text(
-            //     'Forgot Password',
-            //     style: TextStyle(color: Colors.blue, fontSize: 15),
-            //   ),
-            // ),
+            TextButton(
+              onPressed: () {
+                //TODO: FORGOT PASSWORD SCREEN GOES HERE
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SignupScreen(),
+                  ),
+                );
+              },
+              child: const Text(
+                'Forgot Password',
+                style: TextStyle(color: Colors.blue, fontSize: 15),
+              ),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -169,25 +176,29 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 130,
             ),
             //signup button
-            // Container(
-            //   height: 50,
-            //   width: 250,
-            //   decoration: BoxDecoration(
-            //       color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-            //   child: TextButton(
-            //     onPressed: () {
-            //       Navigator.push(
-            //           context,
-            //           MaterialPageRoute(
-            //               builder: (_) =>
-            //               const MyHomePage(title: 'Flutter App')));
-            //     },
-            //     child: const Text(
-            //       'Login',
-            //       style: TextStyle(color: Colors.white, fontSize: 25),
-            //     ),
-            //   ),
-            // ),
+            Container(
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(20)),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SignupScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'New User? Just Sign up!!',
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 18,
+                      backgroundColor: Colors.white),
+                ),
+              ),
+            ),
           ],
         ),
       ),
