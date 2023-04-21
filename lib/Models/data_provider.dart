@@ -217,7 +217,7 @@ class DataProvider extends ChangeNotifier {
     return Marker(
         markerId: MarkerId(id),
         position: LatLng(currentLocation.latitude, currentLocation.longitude),
-        draggable: true,
+        draggable: user.role == 'admin',
         icon: BitmapDescriptor.fromBytes(customIcon),
         onDragStart: (coordinates) {
           if (kDebugMode) {
