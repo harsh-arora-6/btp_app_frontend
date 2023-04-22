@@ -117,55 +117,60 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Consumer<DataProvider>(
                 builder: (context, data, child) {
                   return TextButton(
-                    onPressed: () async {
-                      setState(() {
-                        isLoggingIn = true;
-                      });
-                      Tuple2<UserModel, String> res = await login(
-                          emailController.text, passwordController.text);
-                      UserModel user = res.item1;
-                      data.updateUser(user);
-                      if (data.user.name != '') {
-                        setState(() {
-                          isLoggingIn = false;
-                          isObscured = true;
-                          emailController.text = "";
-                          passwordController.text = "";
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(res.item2),
-                          ),
-                        );
-                        await Navigator.of(context).push(MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                const MyHomePage(title: 'Flutter App')));
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('${res.item2}'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.red),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text("Okay"),
-                                  ),
-                                ],
-                              );
+                    //disable the button if already it has been pressed
+                    onPressed: isLoggingIn == false
+                        ? () async {
+                            setState(() {
+                              isLoggingIn = true;
                             });
-                        setState(() {
-                          isLoggingIn = false;
-                        });
-                      }
-                    },
+                            Tuple2<UserModel, String> res = await login(
+                                emailController.text, passwordController.text);
+                            UserModel user = res.item1;
+                            data.updateUser(user);
+                            if (data.user.name != '') {
+                              setState(() {
+                                isLoggingIn = false;
+                                isObscured = true;
+                                emailController.text = "";
+                                passwordController.text = "";
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(res.item2),
+                                ),
+                              );
+                              await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const MyHomePage(
+                                              title: 'Flutter App')));
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('${res.item2}'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.red),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text("Okay"),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                              setState(() {
+                                isLoggingIn = false;
+                              });
+                            }
+                          }
+                        : null,
                     child: isLoggingIn
                         ? const CircularProgressIndicator(
                             backgroundColor: Colors.white,
