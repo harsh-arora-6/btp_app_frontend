@@ -86,7 +86,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                           await forgetPassword(emailController.text);
 
                       if (message == 'OTP sent to the specified mail') {
-                        print('hello');
+                        // print('hello');
                         setState(() {
                           isSubmitting = false;
                           emailController.text = "";

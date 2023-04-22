@@ -27,7 +27,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Login Page"),
+        title: const Text("Signup Page"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -136,7 +136,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextFormField(
-                  obscureText: isObscured1,
+                  obscureText: isObscured2,
                   controller: confirmPasswordController,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
@@ -190,6 +190,11 @@ class _SignupScreenState extends State<SignupScreen> {
                         confirmPasswordController.text = "";
                       });
                       //return to login screen
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(message),
+                        ),
+                      );
                       Navigator.pop(context);
                     } else {
                       showDialog(

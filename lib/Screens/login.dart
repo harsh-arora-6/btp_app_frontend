@@ -132,6 +132,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           emailController.text = "";
                           passwordController.text = "";
                         });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(res.item2),
+                          ),
+                        );
                         await Navigator.of(context).push(MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 const MyHomePage(title: 'Flutter App')));
