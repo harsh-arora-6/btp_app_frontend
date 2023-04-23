@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Consumer<DataProvider>(
       builder: (context, data, child) {
+        data.context = context;
         return Scaffold(
           appBar: AppBar(
             //user name

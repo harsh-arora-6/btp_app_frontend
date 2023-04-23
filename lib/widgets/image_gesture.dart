@@ -33,7 +33,9 @@ class ImageGesture extends StatelessWidget {
                     TextButton(
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -44,6 +46,8 @@ class ImageGesture extends StatelessWidget {
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.red),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
                       ),
                       onPressed: () {
                         //TODO: perform delete operation here

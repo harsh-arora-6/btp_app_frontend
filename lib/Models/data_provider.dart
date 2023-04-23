@@ -187,7 +187,47 @@ class DataProvider extends ChangeNotifier {
                       onPressed: () {
                         //todo:remove Line from front end and backend
                         // Navigator.pop(context);
-                        removeLine(cable.id as String);
+                        //Dialog box to confirm deletion
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Delete Cable?"),
+                              content: const Text(
+                                  "Are you sure you want to delete this item?"),
+                              actions: <Widget>[
+                                TextButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.blue),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white)),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("CANCEL"),
+                                ),
+                                TextButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.red),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white)),
+                                  onPressed: () {
+                                    //TODO: perform delete operation here
+                                    Navigator.of(context).pop();
+                                    removeLine(cable.id as String);
+                                  },
+                                  child: const Text("DELETE"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                       style: ButtonStyle(
                         backgroundColor:
@@ -214,6 +254,15 @@ class DataProvider extends ChangeNotifier {
         print(error);
       }
     }
+  }
+
+  void removeMarker(String id) async {
+    // remove from backend
+    await deleteComponent(id, 'substation');
+    //remove from frontend
+    _markers.remove(MarkerId(id));
+    hideMarkerInfoWindow();
+    notifyListeners();
   }
 
   // puts marker to current location with the given id
@@ -287,7 +336,48 @@ class DataProvider extends ChangeNotifier {
                 user.role == 'admin'
                     ? TextButton(
                         onPressed: () {
-                          removeMarker(id);
+                          //Dialog box to confirm deletion
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Delete Substation?"),
+                                content: const Text(
+                                    "Are you sure you want to delete this item?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.blue),
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("CANCEL"),
+                                  ),
+                                  TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.red),
+                                        foregroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.white)),
+                                    onPressed: () {
+                                      //TODO: perform delete operation here
+                                      removeMarker(id);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("DELETE"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          // removeMarker(id);
                         },
                         style: ButtonStyle(
                           backgroundColor:
@@ -303,15 +393,6 @@ class DataProvider extends ChangeNotifier {
             LatLng(currentLocation.latitude, currentLocation.longitude),
           );
         });
-  }
-
-  void removeMarker(String id) async {
-    // remove from backend
-    await deleteComponent(id, 'substation');
-    //remove from frontend
-    _markers.remove(MarkerId(id));
-    hideMarkerInfoWindow();
-    notifyListeners();
   }
 
   // puts marker to newly created substation
