@@ -119,21 +119,34 @@ class _ComponentFormState extends State<ComponentForm> {
                 color: Colors.white, borderRadius: BorderRadius.circular(5)),
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
                     // label = ${childName} data
                     Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Text(
-                        '${widget.childName} Data',
-                        style: const TextStyle(fontSize: 20),
+                      padding: const EdgeInsets.only(
+                          left: 15, right: 10, top: 5, bottom: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${widget.childName} Data',
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.cancel,
+                                size: 20,
+                                color: Colors.red,
+                              ))
+                        ],
                       ),
                     ),
                     //List of properties
                     SizedBox(
-                      height: 80.0,
-                      width: 600.0,
+                      height: 150,
+                      width: MediaQuery.of(context).size.width,
                       child: ListView.builder(
                           itemCount: numberOfItems,
                           itemBuilder: (BuildContext context, int index) {
@@ -143,6 +156,7 @@ class _ComponentFormState extends State<ComponentForm> {
                                 children: [
                                   // property name
                                   Expanded(
+                                    flex: 3,
                                     child: TextField(
                                       readOnly: data.user.role != 'admin',
                                       controller: controllers[2 * index],
@@ -165,6 +179,7 @@ class _ComponentFormState extends State<ComponentForm> {
                                   ),
                                   // property value
                                   Expanded(
+                                    flex: 3,
                                     child: TextField(
                                       readOnly: data.user.role != 'admin',
                                       controller: controllers[2 * index + 1],
@@ -189,16 +204,13 @@ class _ComponentFormState extends State<ComponentForm> {
                                               //remove text field
                                               removeTextField(index);
                                             },
-                                            child: Container(
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.black,
-                                                  shape: BoxShape.circle),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(2.0),
-                                                child: Icon(
-                                                  Icons.delete,
-                                                  color: Colors.white,
-                                                ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 10.0),
+                                              child: Icon(
+                                                Icons.delete,
+                                                color: Colors.red,
+                                                size: 20,
                                               ),
                                             ),
                                           ),
@@ -211,57 +223,43 @@ class _ComponentFormState extends State<ComponentForm> {
                     ),
                     //Add field button
                     data.user.role == 'admin'
-                        ? GestureDetector(
-                            onTap: () {
-                              // add new text fields.
-                              addNewTextField();
-                            },
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                  color: Colors.black, shape: BoxShape.circle),
-                              child: const Padding(
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Padding(
                                 padding: EdgeInsets.all(2.0),
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
+                                child: FloatingActionButton(
+                                  mini: true,
+                                  onPressed: () {
+                                    addNewTextField();
+                                  },
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                            ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  // update the model at backend
+                                  await update();
+                                  if (widget.childName == 'cable') {
+                                    //todo include feeder here also as it won't have image component like substation
+                                    data.hideLineInfoWindow();
+                                    //revert polyline color to red
+                                    data.updatePolylineColor(
+                                        widget.model.id as String);
+                                  } else {
+                                    // Navigator.pop(context);
+                                    // data.hideMarkerInfoWindow();
+                                  }
+                                },
+                                child: const Text("Save"),
+                              )
+                            ],
                           )
                         : Container(),
                     // save button or close button
-                    data.user.role == 'admin'
-                        ? ElevatedButton(
-                            onPressed: () async {
-                              // update the model at backend
-                              await update();
-                              if (widget.childName == 'cable') {
-                                //todo include feeder here also as it won't have image component like substation
-                                data.hideLineInfoWindow();
-                                //revert polyline color to red
-                                data.updatePolylineColor(
-                                    widget.model.id as String);
-                              } else {
-                                // Navigator.pop(context);
-                                // data.hideMarkerInfoWindow();
-                              }
-                            },
-                            child: const Text("Save"),
-                          )
-                        : ElevatedButton(
-                            onPressed: () async {
-                              if (widget.childName == 'cable') {
-                                data.hideLineInfoWindow();
-                                //revert polyline color to red
-                                data.updatePolylineColor(
-                                    widget.model.id as String);
-                              } else {
-                                Navigator.pop(context);
-                                // data.hideMarkerInfoWindow();
-                              }
-                            },
-                            child: const Text("Close"),
-                          ),
                   ],
                 ),
               ),
