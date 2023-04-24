@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           CustomInfoWindow(
                             controller: data.customInfoWindowLineController,
-                            height: 400,
+                            height: 500,
                             width: 320,
                             offset: 50,
                           ),

@@ -110,158 +110,157 @@ class _ComponentFormState extends State<ComponentForm> {
   Widget build(BuildContext context) {
     return Consumer<DataProvider>(
       builder: (context, data, child) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(5)),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    // label = ${childName} data
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 15, right: 10, top: 5, bottom: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${widget.childName} Data',
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.cancel,
-                                size: 20,
-                                color: Colors.red,
-                              ))
-                        ],
-                      ),
+        return Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(5)),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  bottom: 20, left: 10, right: 10, top: 5),
+              child: Column(
+                children: [
+                  // label = ${childName} data
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15, right: 10, top: 5, bottom: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${widget.childName} Data',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.cancel,
+                              size: 20,
+                              color: Colors.red,
+                            ))
+                      ],
                     ),
-                    //List of properties
-                    SizedBox(
-                      height: 150,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                          itemCount: numberOfItems,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                              title: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  // property name
-                                  Expanded(
-                                    flex: 3,
-                                    child: TextField(
-                                      readOnly: data.user.role != 'admin',
-                                      controller: controllers[2 * index],
-                                      decoration: InputDecoration(
-                                        labelText:
-                                            keysList[index], // property name
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                      ),
-                                      onChanged: (v) {
-                                        keysList[index] =
-                                            controllers[2 * index].text;
-                                      },
+                  ),
+                  //List of properties
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: 30, maxHeight: 300),
+                    child: ListView.builder(
+                        itemCount: numberOfItems,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            title: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                // property name
+                                Expanded(
+                                  flex: 3,
+                                  child: TextField(
+                                    readOnly: data.user.role != 'admin',
+                                    controller: controllers[2 * index],
+                                    decoration: InputDecoration(
+                                      labelText:
+                                          'property name', // property name
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
                                     ),
-                                  ),
-                                  // space between property name and value.
-                                  const SizedBox(
-                                    width: 10.0,
-                                  ),
-                                  // property value
-                                  Expanded(
-                                    flex: 3,
-                                    child: TextField(
-                                      readOnly: data.user.role != 'admin',
-                                      controller: controllers[2 * index + 1],
-                                      decoration: InputDecoration(
-                                        // property value
-                                        labelText: values[index].toString(),
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                      ),
-                                      onChanged: (v) {
-                                        values[index] =
-                                            controllers[2 * index + 1].text;
-                                      },
-                                    ),
-                                  ),
-                                  // delete button
-                                  data.user.role == 'admin'
-                                      ? Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              //remove text field
-                                              removeTextField(index);
-                                            },
-                                            child: const Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 10.0),
-                                              child: Icon(
-                                                Icons.delete,
-                                                color: Colors.red,
-                                                size: 20,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
-                    //Add field button
-                    data.user.role == 'admin'
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(2.0),
-                                child: FloatingActionButton(
-                                  mini: true,
-                                  onPressed: () {
-                                    addNewTextField();
-                                  },
-                                  child: const Icon(
-                                    Icons.add,
-                                    color: Colors.white,
+                                    onChanged: (v) {
+                                      keysList[index] =
+                                          controllers[2 * index].text;
+                                    },
                                   ),
                                 ),
-                              ),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  // update the model at backend
-                                  await update();
-                                  if (widget.childName == 'cable') {
-                                    //todo include feeder here also as it won't have image component like substation
-                                    data.hideLineInfoWindow();
-                                    //revert polyline color to red
-                                    data.updatePolylineColor(
-                                        widget.model.id as String);
-                                  } else {
-                                    // Navigator.pop(context);
-                                    // data.hideMarkerInfoWindow();
-                                  }
+                                // space between property name and value.
+                                const SizedBox(
+                                  width: 10.0,
+                                ),
+                                // property value
+                                Expanded(
+                                  flex: 3,
+                                  child: TextField(
+                                    readOnly: data.user.role != 'admin',
+                                    controller: controllers[2 * index + 1],
+                                    decoration: InputDecoration(
+                                      // property value
+                                      labelText: 'property value',
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                    ),
+                                    onChanged: (v) {
+                                      values[index] =
+                                          controllers[2 * index + 1].text;
+                                    },
+                                  ),
+                                ),
+                                // delete button
+                                data.user.role == 'admin'
+                                    ? Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            //remove text field
+                                            removeTextField(index);
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10.0),
+                                            child: Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            ),
+                          );
+                        }),
+                  ),
+                  //Add field button
+                  data.user.role == 'admin'
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(2.0),
+                              child: FloatingActionButton(
+                                mini: true,
+                                onPressed: () {
+                                  addNewTextField();
                                 },
-                                child: const Text("Save"),
-                              )
-                            ],
-                          )
-                        : Container(),
-                    // save button or close button
-                  ],
-                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                // update the model at backend
+                                await update();
+                                if (widget.childName == 'cable') {
+                                  //todo include feeder here also as it won't have image component like substation
+                                  data.hideLineInfoWindow();
+                                  //revert polyline color to red
+                                  data.updatePolylineColor(
+                                      widget.model.id as String);
+                                } else {
+                                  // Navigator.pop(context);
+                                  // data.hideMarkerInfoWindow();
+                                }
+                              },
+                              child: const Text("Save"),
+                            )
+                          ],
+                        )
+                      : Container(),
+                  // save button or close button
+                ],
               ),
             ),
           ),
