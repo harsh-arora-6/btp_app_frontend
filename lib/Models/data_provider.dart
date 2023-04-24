@@ -45,7 +45,7 @@ class DataProvider extends ChangeNotifier {
   void makeDefaultScreen() {
     hideLineInfoWindow();
     hideMarkerInfoWindow();
-    makeAllLineRed();
+    // makeAllLineRed();
     notifyListeners();
   }
 
@@ -127,12 +127,19 @@ class DataProvider extends ChangeNotifier {
   }
 
   void addPolyLine(dynamic cable) async {
+    print(cable.properties);
+    var details = new Map();
+    // Map<String,Widget>de;tails;
+    details['yellow'] = Colors.cyanAccent;
+    details['green'] = Colors.yellow;
     _polylines.remove(currentPolylineId);
     _polylines[PolylineId(cable.id as String)] = Polyline(
         polylineId: PolylineId(cable.id),
         consumeTapEvents: true,
         width: 3,
-        color: Colors.red,
+        color: cable.properties['color'] != null
+            ? details[cable.properties['color']]
+            : Colors.red,
         points: List<LatLng>.from(
           cable.locationPoints
               .map((e) => LatLng(e.latitutde as double, e.longitude as double))
@@ -173,7 +180,7 @@ class DataProvider extends ChangeNotifier {
 
   void handlePolylineClick(dynamic cable) async {
     try {
-      updatePolylineColor(cable.id as String, color: 'blue');
+      // updatePolylineColor(cable.id as String, color: 'blue');
 
       PolylineId polylineId = PolylineId(cable.id as String);
 

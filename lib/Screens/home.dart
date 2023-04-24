@@ -99,10 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               if (kDebugMode) {
                                 // print("clicked position");
                               }
-                              data.makeAllLineRed();
+                              // data.makeAllLineRed();
                               data.updateClickLocation(position);
-                              data.hideMarkerInfoWindow();
-                              data.hideLineInfoWindow();
+                              // data.hideMarkerInfoWindow();
+                              // data.hideLineInfoWindow();
+                              data.makeDefaultScreen();
                             },
                             onCameraMove: (position) {
                               data.cameraMove();

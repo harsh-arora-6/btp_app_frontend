@@ -134,8 +134,10 @@ class _ComponentFormState extends State<ComponentForm> {
                           style: const TextStyle(fontSize: 20),
                         ),
                         IconButton(
-                            onPressed: () {},
-                            icon: Icon(
+                            onPressed: () {
+                              data.makeDefaultScreen();
+                            },
+                            icon: const Icon(
                               Icons.cancel,
                               size: 20,
                               color: Colors.red,
