@@ -135,7 +135,11 @@ class _ComponentFormState extends State<ComponentForm> {
                         ),
                         IconButton(
                             onPressed: () {
-                              data.makeDefaultScreen();
+                              if (widget.childName == 'cable') {
+                                data.makeDefaultScreen();
+                              } else {
+                                Navigator.pop(context);
+                              }
                             },
                             icon: const Icon(
                               Icons.cancel,
@@ -229,7 +233,7 @@ class _ComponentFormState extends State<ComponentForm> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Padding(
-                              padding: EdgeInsets.all(2.0),
+                              padding: const EdgeInsets.all(2.0),
                               child: FloatingActionButton(
                                 mini: true,
                                 onPressed: () {
@@ -247,12 +251,13 @@ class _ComponentFormState extends State<ComponentForm> {
                                 await update();
                                 if (widget.childName == 'cable') {
                                   //todo include feeder here also as it won't have image component like substation
-                                  data.hideLineInfoWindow();
-                                  //revert polyline color to red
-                                  data.updatePolylineColor(
-                                      widget.model.id as String);
+                                  // data.hideLineInfoWindow();
+                                  // //revert polyline color to red
+                                  // data.updatePolylineColor(
+                                  //     widget.model.id as String);
+                                  data.makeDefaultScreen();
                                 } else {
-                                  // Navigator.pop(context);
+                                  Navigator.pop(context);
                                   // data.hideMarkerInfoWindow();
                                 }
                               },

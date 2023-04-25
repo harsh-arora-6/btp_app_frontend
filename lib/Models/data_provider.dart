@@ -285,8 +285,7 @@ class DataProvider extends ChangeNotifier {
           }
         },
         onTap: () {
-          hideLineInfoWindow();
-          makeAllLineRed();
+          makeDefaultScreen();
           customInfoWindowMarkerController.addInfoWindow!(
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
