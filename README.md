@@ -1,16 +1,11 @@
-# btp_app_mac
+# Frontend for Visualization of Distribution System App
 
-A new Flutter project.
+This project enables users to add icons at different substation location and add lines along the path of cables.
 
-## Getting Started
+## Installation
+To run this App on your local machine, follow these steps:
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository to your local machine.
+2. Navigate to the project directory.
+3. Run flutter pub get to install all dependencies.
+4. Change the url in the `constants.dart` file to the url of the backend server (for example : after hosting the backend server or ngrok link while testing backend)
