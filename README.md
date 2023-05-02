@@ -15,6 +15,6 @@ To run this App on your local machine, follow these steps:
 <meta-data android:name="com.google.android.geo.API_KEY"
             android:value=<API-KEY>/>
 ```
-Replace API-KEY with your API Key.
+Replace API-KEY with your API Key in the `AndroidManifest.xml` file.
 ## Contact information
 If you have any questions or issues with the Code, please contact the project maintainers at phone:`8800402403`(Harsh Arora) ,`8871853272`(Sanskar Gupta) , `9993646823`(Chirag Sethiya).
