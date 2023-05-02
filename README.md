@@ -9,3 +9,6 @@ To run this App on your local machine, follow these steps:
 2. Navigate to the project directory.
 3. Run flutter pub get to install all dependencies.
 4. Change the url in the `constants.dart` file to the url of the backend server (for example : after hosting the backend server or ngrok link while testing backend)
+
+## Contact information
+If you have any questions or issues with the Code, please contact the project maintainers at phone:`8800402403`(Harsh Arora) ,`8871853272`(Sanskar Gupta) , `9993646823`(Chirag Sethiya).
