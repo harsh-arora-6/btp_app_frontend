@@ -167,6 +167,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   });
                               setState(() {
                                 isLoggingIn = false;
+                                isObscured = true;
+                                emailController.text = "";
+                                passwordController.text = "";
                               });
                             }
                           }

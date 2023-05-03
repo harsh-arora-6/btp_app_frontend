@@ -123,6 +123,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                             });
                         setState(() {
                           isSubmitting = false;
+                          emailController.text = "";
                         });
                       }
                     }

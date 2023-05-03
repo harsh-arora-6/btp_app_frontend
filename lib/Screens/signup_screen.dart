@@ -219,6 +219,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           });
                       setState(() {
                         isSigningUp = false;
+                        nameController.text = "";
+                        emailController.text = "";
+                        passwordController.text = "";
+                        confirmPasswordController.text = "";
                       });
                     }
                   },

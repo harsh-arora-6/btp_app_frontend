@@ -193,6 +193,9 @@ class _ResetScreenState extends State<ResetScreen> {
                           });
                       setState(() {
                         isResetting = false;
+                        otpController.text = "";
+                        passwordController.text = "";
+                        confirmPasswordController.text = "";
                       });
                     }
                   },
